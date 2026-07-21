@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, Save } from "lucide-react";
-import { Button, Card, Input, Select, Tabs, Textarea } from "@/components/ui";
+import { Check, Save } from "lucide-react";
+import { Card, Input, Select, Tabs, Textarea } from "@/components/ui";
+import { MeetingSearchFilters } from "@/components/meetings/meeting-search-filters";
 import {
   SCREENING_SCORE_OPTIONS,
   categoryLabels,
@@ -14,6 +15,7 @@ import type {
   ScreeningCategory,
   ScreeningItemDefinition,
   ScreeningResponse,
+  Staff,
   Student,
 } from "@/types";
 const categories = Object.entries(categoryLabels).map(([id, label]) => ({
@@ -22,9 +24,11 @@ const categories = Object.entries(categoryLabels).map(([id, label]) => ({
 }));
 export function Preparation({
   students,
+  staff,
   definitions,
 }: {
   students: Student[];
+  staff: Staff[];
   definitions: ScreeningItemDefinition[];
 }) {
   const params = useSearchParams(),
@@ -37,8 +41,7 @@ export function Preparation({
     save = useScreeningStore((s) => s.saveResponse),
     saveConcern = useScreeningStore((s) => s.saveConcern);
   const student = students.find((s) => s.id === id) ?? students[0],
-    session = sessions.find((s) => s.studentId === student?.id),
-    index = students.findIndex((s) => s.id === student?.id);
+    session = sessions.find((s) => s.studentId === student?.id);
   useEffect(() => {
     if (!saved) {
       const t = setTimeout(() => setSaved(true), 500);
@@ -46,13 +49,6 @@ export function Preparation({
     }
   }, [saved]);
   if (!student) return null;
-  const move = (n: number) => {
-    const next = students[index + n];
-    if (next) {
-      setId(next.id);
-      router.replace(`/screening/prepare?student=${next.id}`);
-    }
-  };
   const change = (
     item: ScreeningItemDefinition,
     patch: Partial<ScreeningResponse>,
@@ -70,64 +66,17 @@ export function Preparation({
   };
   return (
     <>
-      <Card className="sticky-form-head">
-        <div className="direction-head">
-          <div>
-            <b>スクリーニング会議準備</b>
-            <small className="muted">　2026年度・1学期</small>
-          </div>
-          <span
-            className={saved ? "badge status-success" : "badge status-info"}
-          >
-            {saved ? (
-              <>
-                <Check size={14} />
-                保存済み
-              </>
-            ) : (
-              <>
-                <Save size={14} />
-                保存中...
-              </>
-            )}
-          </span>
-        </div>
-        <div className="student-nav">
-          <Button
-            variant="outline"
-            disabled={index === 0}
-            onClick={() => move(-1)}
-          >
-            <ArrowLeft />
-            前へ
-          </Button>
-          <Select
-            label="対象生徒"
-            value={student.id}
-            onChange={(e) => {
-              setId(e.target.value);
-              router.replace(`/screening/prepare?student=${e.target.value}`);
-            }}
-          >
-            {students.map((s) => (
-              <option value={s.id} key={s.id}>
-                {s.grade}年{s.className}組 {s.name}
-              </option>
-            ))}
-          </Select>
-          <Button
-            variant="outline"
-            disabled={index === students.length - 1}
-            onClick={() => move(1)}
-          >
-            次へ
-            <ArrowRight />
-          </Button>
-          <b>
-            {index + 1} / {students.length}人
-          </b>
-        </div>
-      </Card>
+      <div className="sticky-form-head">
+        <MeetingSearchFilters
+          students={students}
+          staff={staff}
+          selectedId={student.id}
+          onStudentChange={(studentId) => {
+            setId(studentId);
+            router.replace(`/screening/prepare?student=${studentId}`);
+          }}
+        />
+      </div>
       <div className="section">
         <Tabs
           items={categories}

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   Button,
   Card,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui";
 import { formatDate } from "@/lib/utils";
 import { ScreeningScoreTable } from "@/components/screening/screening-score-table";
+import { MeetingSearchFilters } from "@/components/meetings/meeting-search-filters";
 import {
   useActionStore,
   useMeetingStore,
@@ -94,7 +95,6 @@ export function MeetingWorkspace({
     updateMeeting = useMeetingStore((s) => s.updateMeeting),
     toast = useUiStore((s) => s.toast),
     student = students.find((s) => s.id === id) ?? students[0],
-    index = students.findIndex((s) => s.id === student?.id),
     session = sessions.find((s) => s.studentId === student?.id);
   if (!student) return null;
   const saveAll = () => {
@@ -134,10 +134,6 @@ export function MeetingWorkspace({
     setActionTitle("");
     toast("アクションを作成しました");
   };
-  const move = (n: number) => {
-    const next = students[index + n];
-    if (next) setId(next.id);
-  };
   const selectSupportState = (
     direction: SupportDirection,
     option: string,
@@ -158,40 +154,12 @@ export function MeetingWorkspace({
   };
   return (
     <>
-      <Card>
-        <div className="student-nav">
-          <Button
-            variant="outline"
-            disabled={index === 0}
-            onClick={() => move(-1)}
-          >
-            <ArrowLeft />
-            前へ
-          </Button>
-          <Select
-            label="対象生徒"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-          >
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.grade}年{s.className}組 {s.name}
-              </option>
-            ))}
-          </Select>
-          <Button
-            variant="outline"
-            disabled={index === students.length - 1}
-            onClick={() => move(1)}
-          >
-            次へ
-            <ArrowRight />
-          </Button>
-          <b>
-            {index + 1} / {students.length}人
-          </b>
-        </div>
-      </Card>
+      <MeetingSearchFilters
+        students={students}
+        staff={staff}
+        selectedId={id}
+        onStudentChange={setId}
+      />
       {mode === "team" && (
         <section className="support-direction-section section">
           <div className="support-direction-title">

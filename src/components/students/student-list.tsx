@@ -1,133 +1,159 @@
 "use client";
-import { useMemo } from "react";
+
+import { Fragment, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronRight, Search, X } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, Search, X } from "lucide-react";
 import {
   Button,
   DirectionBadge,
   EmptyState,
+  Input,
   Select,
-  StatusBadge,
 } from "@/components/ui";
+import { screeningCategories } from "@/config";
 import { formatDate, today } from "@/lib/utils";
-import { useActionStore, useUiStore } from "@/stores";
-import type { Staff, Student, SupportDirection } from "@/types";
+import { useActionStore } from "@/stores";
+import type {
+  InternalFlag,
+  ScreeningSession,
+  Staff,
+  Student,
+  SupportDirection,
+  SupportRecord,
+} from "@/types";
+
+interface StudentListProps {
+  students: Student[];
+  staff: Staff[];
+  screenings: ScreeningSession[];
+  flags: InternalFlag[];
+  records: SupportRecord[];
+}
+
 export function StudentList({
   students,
   staff,
-}: {
-  students: Student[];
-  staff: Staff[];
-}) {
-  const router = useRouter(),
-    params = useSearchParams(),
-    actions = useActionStore((s) => s.actions),
-    toast = useUiStore((s) => s.toast);
-  const year = params.get("year") ?? "2026",
-    term = params.get("term") ?? "1",
-    grade = params.get("grade") ?? "",
-    className = params.get("class") ?? "",
-    name = params.get("name") ?? "",
-    assigneeCategory = params.get("assigneeCategory") ?? "",
-    direction = params.get("direction") ?? "",
-    actionStatus = params.get("actionStatus") ?? "";
+  screenings,
+  flags,
+  records,
+}: StudentListProps) {
+  const router = useRouter();
+  const params = useSearchParams();
+  const actions = useActionStore((state) => state.actions);
+  const [expandedScoreIds, setExpandedScoreIds] = useState<string[]>([]);
+
+  const year = params.get("year") ?? "2026";
+  const grade = params.get("grade") ?? "";
+  const className = params.get("class") ?? "";
+  const name = params.get("name") ?? "";
+  const direction = params.get("direction") ?? "";
+  const internalFlag = params.get("internalFlag") ?? "";
+  const teamMeeting = params.get("teamMeeting") ?? "";
+  const youngCarer = params.get("youngCarer") ?? "";
+  const actionStatus = params.get("actionStatus") ?? "";
+
   const update = (key: string, value: string) => {
-    const p = new URLSearchParams(params);
-    if (value) p.set(key, value);
-    else p.delete(key);
-    router.push(`/students?${p}`);
+    const nextParams = new URLSearchParams(params);
+    if (value) nextParams.set(key, value);
+    else nextParams.delete(key);
+    router.push(`/students?${nextParams.toString()}`);
   };
+
   const filtered = useMemo(
     () =>
-      students.filter(
-        (s) =>
-          (!grade || s.grade === Number(grade)) &&
-          (!className || s.className === className) &&
+      students.filter((student) => {
+        const isYoungCarer = student.internalFlagIds.includes("flag-2");
+        return (
+          (!grade || student.grade === Number(grade)) &&
+          (!className || student.className === className) &&
+          (!name ||
+            student.name
+              .toLocaleLowerCase("ja")
+              .includes(name.toLocaleLowerCase("ja"))) &&
           (!direction ||
-            s.supportDirections.includes(direction as SupportDirection)) &&
-          (!name || s.id === name) &&
-          (!assigneeCategory ||
-            staff.some(
-              (member) =>
-                member.id === s.assignedTeacherId &&
-                (assigneeCategory === "class"
-                  ? member.role === "homeroom-teacher"
-                  : assigneeCategory === "special-support"
-                    ? member.role === "special-support"
-                    : assigneeCategory === "health"
-                      ? member.role === "school-nurse"
-                      : assigneeCategory === "office"
-                        ? member.role === "office"
-                        : assigneeCategory === "management"
-                          ? ["manager", "student-guidance"].includes(
-                              member.role,
-                            )
-                          : ["social-worker", "counselor"].includes(
-                              member.role,
-                            )),
+            student.supportDirections.includes(
+              direction as SupportDirection,
             )) &&
+          (!internalFlag || student.internalFlagIds.includes(internalFlag)) &&
+          (!teamMeeting ||
+            (teamMeeting === "yes"
+              ? student.teamMeetingRequired
+              : !student.teamMeetingRequired)) &&
+          (!youngCarer ||
+            (youngCarer === "yes" ? isYoungCarer : !isYoungCarer)) &&
           (!actionStatus ||
             actions.some(
-              (a) =>
-                a.studentId === s.id &&
-                a.dueDate &&
-                a.dueDate < today &&
-                a.status !== "completed",
-            )),
-      ),
+              (action) =>
+                action.studentId === student.id &&
+                action.dueDate &&
+                action.dueDate < today &&
+                action.status !== "completed",
+            ))
+        );
+      }),
     [
-      students,
-      staff,
-      grade,
-      className,
-      direction,
-      name,
-      assigneeCategory,
       actionStatus,
       actions,
+      className,
+      direction,
+      grade,
+      internalFlag,
+      name,
+      students,
+      teamMeeting,
+      youngCarer,
     ],
   );
+
   const activeConditions: { key: string; label: string }[] = [];
   if (year !== "2026")
     activeConditions.push({ key: "year", label: `${year}年度` });
-  if (term !== "1")
-    activeConditions.push({ key: "term", label: `${term}学期` });
+  if (direction) {
+    const labels: Record<string, string> = {
+      A: "A 教職員関与 対応中",
+      B: "B 地域資源の活用 対応中",
+      C: "C 専門機関の活用 対応中",
+    };
+    activeConditions.push({
+      key: "direction",
+      label: labels[direction] ?? direction,
+    });
+  }
+  if (internalFlag)
+    activeConditions.push({
+      key: "internalFlag",
+      label:
+        flags.find((flag) => flag.id === internalFlag)?.name ?? "校内フラグ",
+    });
   if (grade) activeConditions.push({ key: "grade", label: `${grade}年生` });
   if (className)
     activeConditions.push({ key: "class", label: `${className}組` });
   if (name)
     activeConditions.push({
       key: "name",
-      label:
-        students.find((student) => student.id === name)?.name ?? "選択生徒",
+      label: `生徒名：${name}`,
     });
-  if (assigneeCategory) {
-    const assigneeLabels: Record<string, string> = {
-      class: "学級",
-      "special-support": "特別支援",
-      health: "養護",
-      office: "事務",
-      management: "管理職・生徒指導",
-      community: "地域・調査",
-    };
+  if (teamMeeting)
     activeConditions.push({
-      key: "assigneeCategory",
-      label: assigneeLabels[assigneeCategory] ?? assigneeCategory,
+      key: "teamMeeting",
+      label: `T会議：${teamMeeting === "yes" ? "対象" : "対象外"}`,
     });
-  }
-  if (direction) {
-    const directionLabels: Record<string, string> = {
-      A: "A 教職員関与",
-      B: "B 地域資源の活用",
-      C: "C 専門機関の活用",
-    };
+  if (youngCarer)
     activeConditions.push({
-      key: "direction",
-      label: directionLabels[direction] ?? direction,
+      key: "youngCarer",
+      label: `ヤングケアラー：${youngCarer === "yes" ? "対象" : "対象外"}`,
     });
-  }
   if (actionStatus)
     activeConditions.push({ key: "actionStatus", label: "期限超過" });
+
+  const toggleScores = (studentId: string) => {
+    setExpandedScoreIds((current) =>
+      current.includes(studentId)
+        ? current.filter((id) => id !== studentId)
+        : [...current, studentId],
+    );
+  };
+
   return (
     <>
       <div className="card student-search-panel">
@@ -139,71 +165,84 @@ export function StudentList({
           <Select
             label="年度"
             value={year}
-            onChange={(e) => update("year", e.target.value)}
+            onChange={(event) => update("year", event.target.value)}
           >
             <option value="2024">2024年度</option>
             <option value="2025">2025年度</option>
             <option value="2026">2026年度</option>
           </Select>
           <Select
-            label="学期"
-            value={term}
-            onChange={(e) => update("term", e.target.value)}
-          >
-            <option value="1">1学期</option>
-            <option value="2">2学期</option>
-            <option value="3">3学期</option>
-          </Select>
-          <Select
-            label="学年"
-            value={grade}
-            onChange={(e) => update("grade", e.target.value)}
+            label="フラグ検索"
+            value={direction}
+            onChange={(event) => update("direction", event.target.value)}
           >
             <option value="">すべて</option>
-            {[1, 2, 3, 4, 5, 6].map((g) => (
-              <option key={g} value={g}>
-                {g}年
+            <option value="A">A 教職員関与 対応中</option>
+            <option value="B">B 地域資源の活用 対応中</option>
+            <option value="C">C 専門機関の活用 対応中</option>
+          </Select>
+          <Select
+            label="校内フラグ検索"
+            value={internalFlag}
+            onChange={(event) => update("internalFlag", event.target.value)}
+          >
+            <option value="">すべて</option>
+            {flags.map((flag) => (
+              <option key={flag.id} value={flag.id}>
+                {flag.name}
               </option>
             ))}
           </Select>
           <Select
-            label="クラス"
+            label="学年検索"
+            value={grade}
+            onChange={(event) => update("grade", event.target.value)}
+          >
+            <option value="">全学年</option>
+            {[1, 2, 3, 4, 5, 6].map((value) => (
+              <option key={value} value={value}>
+                {value}年生
+              </option>
+            ))}
+          </Select>
+          <Select
+            label="クラス検索"
             value={className}
-            onChange={(e) => update("class", e.target.value)}
+            onChange={(event) => update("class", event.target.value)}
           >
             <option value="">全クラス</option>
             {Array.from({ length: 10 }, (_, index) => index + 1).map(
-              (classNumber) => (
-                <option key={classNumber} value={classNumber}>
-                  {classNumber}組
+              (value) => (
+                <option key={value} value={value}>
+                  {value}組
                 </option>
               ),
             )}
           </Select>
-          <Select
-            label="生徒名"
+          <Input
+            label="生徒名検索"
             value={name}
-            onChange={(e) => update("name", e.target.value)}
+            onChange={(event) => update("name", event.target.value)}
+            placeholder="生徒名を入力"
+            type="search"
+          />
+          <Select
+            label="T会議選択"
+            value={teamMeeting}
+            onChange={(event) => update("teamMeeting", event.target.value)}
           >
-            <option value="">全生徒</option>
-            {students.map((student) => (
-              <option key={student.id} value={student.id}>
-                {student.name}
-              </option>
-            ))}
+            <option value="">すべて</option>
+            <option value="yes">対象</option>
+            <option value="no">対象外</option>
           </Select>
           <Select
-            label="担当検索"
-            value={assigneeCategory}
-            onChange={(e) => update("assigneeCategory", e.target.value)}
+            label="ヤングケアラー"
+            value={youngCarer}
+            onChange={(event) => update("youngCarer", event.target.value)}
           >
-            <option value="">全担当</option>
-            <option value="class">学級</option>
-            <option value="special-support">特別支援</option>
-            <option value="health">養護</option>
-            <option value="office">事務</option>
-            <option value="management">管理職・生徒指導</option>
-            <option value="community">地域・調査</option>
+            <option value="">すべて</option>
+            <option value="yes">対象</option>
+            <option value="no">対象外</option>
           </Select>
         </div>
         {activeConditions.length > 0 && (
@@ -233,6 +272,7 @@ export function StudentList({
           </div>
         )}
       </div>
+
       <p className="muted section">{filtered.length}名を表示</p>
       {filtered.length === 0 ? (
         <EmptyState
@@ -243,81 +283,166 @@ export function StudentList({
           }
         />
       ) : (
-        <div className="table-wrap">
-          <table className="desktop-table">
+        <div className="table-wrap student-list-table-wrap">
+          <table className="desktop-table student-list-table">
             <thead>
               <tr>
-                <th>生徒</th>
-                <th>学年・クラス</th>
-                <th>支援方向</th>
-                <th>最新スコア</th>
-                <th>前回比</th>
-                <th>進行中アクション</th>
-                <th>次回確認日</th>
-                <th>最終更新</th>
-                <th>操作</th>
+                <th>クラス</th>
+                <th>出席番号</th>
+                <th>氏名</th>
+                <th>フラグ・校内対応</th>
+                <th>スクリーニング点数</th>
+                <th>対応記録</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((s) => {
-                const sa = actions.filter((a) => a.studentId === s.id),
-                  over = sa.filter(
-                    (a) =>
-                      a.dueDate &&
-                      a.dueDate < today &&
-                      a.status !== "completed",
-                  );
-                const diff =
-                  s.latestScreeningScore !== null &&
-                  s.previousScreeningScore !== null
-                    ? s.latestScreeningScore - s.previousScreeningScore
-                    : null;
+              {filtered.map((student) => {
+                const session = screenings.find(
+                  (item) => item.studentId === student.id,
+                );
+                const scoreByItem = new Map(
+                  session?.responses.map((response) => [
+                    response.itemId,
+                    response.score ?? 0,
+                  ]) ?? [],
+                );
+                const categoryTotals = screeningCategories.map((category) =>
+                  category.items.reduce(
+                    (sum, _item, index) =>
+                      sum +
+                      (scoreByItem.get(`${category.id}-${index + 1}`) ?? 0),
+                    0,
+                  ),
+                );
+                const total = categoryTotals.reduce(
+                  (sum, value) => sum + value,
+                  0,
+                );
+                const evaluation = Math.min(
+                  5,
+                  Math.max(1, Math.ceil(total / 14)),
+                );
+                const highestScore = Math.max(...categoryTotals);
+                const highestIndex =
+                  highestScore > 0 ? categoryTotals.indexOf(highestScore) : -1;
+                const latestRecord = records
+                  .filter((record) => record.studentId === student.id)
+                  .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))[0];
+                const isExpanded = expandedScoreIds.includes(student.id);
+
                 return (
-                  <tr
-                    className="clickable"
-                    key={s.id}
-                    onClick={() => router.push(`/students/${s.id}`)}
-                  >
-                    <td>
-                      <b>{s.name}</b>
-                      <small className="muted">
-                        　出席番号 {s.attendanceNumber}
-                      </small>
-                    </td>
-                    <td>
-                      {s.grade}年{s.className}組
-                    </td>
-                    <td>
-                      {s.supportDirections.length
-                        ? s.supportDirections.map((d) => (
-                            <DirectionBadge key={d} direction={d} />
-                          ))
-                        : "未設定"}
-                    </td>
-                    <td>{s.latestScreeningScore ?? "—"}点</td>
-                    <td className={diff && diff > 0 ? "field-error" : ""}>
-                      {diff === null ? "—" : diff > 0 ? `+${diff}` : diff}
-                    </td>
-                    <td>
-                      {sa.filter((a) => a.status === "in-progress").length}件{" "}
-                      {over.length > 0 && (
-                        <StatusBadge status="in-progress" overdue />
-                      )}
-                    </td>
-                    <td>{formatDate(s.nextReviewDate)}</td>
-                    <td>{formatDate(s.lastUpdatedAt)}</td>
-                    <td>
-                      <Button
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toast("対応記録の追加は生徒個表から操作できます");
-                        }}
-                      >
-                        詳細 <ChevronRight size={16} />
-                      </Button>
-                    </td>
-                  </tr>
+                  <Fragment key={student.id}>
+                    <tr
+                      className="clickable"
+                      onClick={() => router.push(`/students/${student.id}`)}
+                    >
+                      <td className="student-class-cell">
+                        {student.grade}年{student.className}組
+                      </td>
+                      <td>{student.attendanceNumber}</td>
+                      <td className="student-name-cell">
+                        <b>{student.name}</b>
+                      </td>
+                      <td>
+                        <div className="student-flag-cell">
+                          {student.supportDirections.length
+                            ? student.supportDirections.map((value) => (
+                                <DirectionBadge key={value} direction={value} />
+                              ))
+                            : "未設定"}
+                          {student.internalFlagIds.map((flagId) => {
+                            const flag = flags.find(
+                              (item) => item.id === flagId,
+                            );
+                            return flag ? (
+                              <span
+                                className="internal-flag-pill"
+                                key={flag.id}
+                              >
+                                {flag.shortLabel}
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
+                      </td>
+                      <td className="student-score-summary-cell">
+                        <div className="student-score-summary">
+                          <div className="student-score-summary-values">
+                            <span>
+                              合計 <b>{total}</b>
+                            </span>
+                            <span>
+                              ★評価 <b>{evaluation}</b>
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              toggleScores(student.id);
+                            }}
+                            aria-expanded={isExpanded}
+                            aria-label={`${student.name}の点数詳細を${isExpanded ? "閉じる" : "表示"}`}
+                          >
+                            {isExpanded ? "閉じる" : "点数を見る"}
+                            {isExpanded ? (
+                              <ChevronUp size={16} />
+                            ) : (
+                              <ChevronDown size={16} />
+                            )}
+                          </Button>
+                        </div>
+                      </td>
+                      <td className="student-record-cell">
+                        {latestRecord ? (
+                          <>
+                            <small>{formatDate(latestRecord.occurredAt)}</small>
+                            <b>{latestRecord.title}</b>
+                            <span>
+                              {
+                                staff.find(
+                                  (member) =>
+                                    member.id === latestRecord.createdBy,
+                                )?.name
+                              }
+                            </span>
+                          </>
+                        ) : (
+                          <span>記録なし</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          aria-label={`${student.name}の詳細`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            router.push(`/students/${student.id}`);
+                          }}
+                        >
+                          <ChevronRight size={16} />
+                        </Button>
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr className="student-score-detail-row">
+                        <td colSpan={6}>
+                          <div className="student-score-detail-grid">
+                            {screeningCategories.map((category, index) => (
+                              <div
+                                className={`student-score-detail-card${index === highestIndex ? " is-highest" : ""}`}
+                                key={category.id}
+                              >
+                                <span>{category.label}</span>
+                                <b>{categoryTotals[index]}</b>
+                                {index === highestIndex && (
+                                  <small>最高点</small>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>

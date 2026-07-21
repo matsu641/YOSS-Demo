@@ -174,6 +174,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span aria-current="page">{currentMeeting[1]}</span>
             </nav>
           )}
+          {path === "/actions" && (
+            <nav className="topbar-breadcrumb" aria-label="パンくず">
+              <Link href="/dashboard">ダッシュボード</Link>
+              <ChevronRight aria-hidden="true" />
+              <span aria-current="page">アクション一覧</span>
+            </nav>
+          )}
           <div className="topbar-spacer" />
           <div className="school">
             <b>YOSSデモ小学校</b>
