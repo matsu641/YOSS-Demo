@@ -6,6 +6,7 @@ import { useState, type ReactNode } from "react";
 import {
   Bell,
   CalendarCheck,
+  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Database,
@@ -24,12 +25,11 @@ import { useUiStore } from "@/stores";
 const nav = [
   [/dashboard/, "/dashboard", "ダッシュボード", LayoutDashboard],
   [/students/, "/students", "生徒一覧", Users],
-  [
-    /actions|screening|team-meeting/,
-    "/screening/prepare",
-    "会議の準備・実施",
-    CalendarCheck,
-  ],
+] as const;
+const meetingChildren = [
+  ["/screening/prepare", "スクリーニング準備"],
+  ["/screening/meeting", "スクリーニング会議"],
+  ["/team-meeting", "校内チーム会議"],
 ] as const;
 const displayOnlyNav = [
   ["初期設定フロー", FileCheck2],
@@ -47,6 +47,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     reset = useUiStore((s) => s.reset);
   const [confirm, setConfirm] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const isMeetingPath = /meetings|screening|team-meeting/.test(path);
+  const [meetingOpen, setMeetingOpen] = useState(isMeetingPath);
+  const currentMeeting = meetingChildren.find(([href]) => path === href);
   return (
     <div className={cn("app-layout", collapsed && "sidebar-collapsed")}>
       <aside className={cn("sidebar", open && "mobile-open")}>
@@ -65,7 +68,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             type="button"
             className="sidebar-collapse"
             onClick={() => setCollapsed((value) => !value)}
-            aria-label={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
+            aria-label={
+              collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"
+            }
             title={collapsed ? "サイドバーを展開" : "サイドバーを折りたたむ"}
           >
             {collapsed ? <ChevronsRight /> : <ChevronsLeft />}
@@ -86,6 +91,36 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span>{label}</span>
             </Link>
           ))}
+          <button
+            type="button"
+            className={cn("nav-item nav-parent", isMeetingPath && "active")}
+            aria-expanded={meetingOpen}
+            title={collapsed ? "会議の準備・実施" : undefined}
+            onClick={() => {
+              if (collapsed) setCollapsed(false);
+              setMeetingOpen((value) => !value);
+            }}
+          >
+            <CalendarCheck />
+            <span>会議の準備・実施</span>
+            <ChevronRight
+              className={cn("nav-parent-chevron", meetingOpen && "open")}
+            />
+          </button>
+          {meetingOpen && (
+            <div className="nav-submenu">
+              {meetingChildren.map(([href, label]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn("nav-subitem", path === href && "active")}
+                  onClick={() => open && toggle()}
+                >
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="nav-divider" />
           {displayOnlyNav.map(([label, Icon]) => (
             <button
@@ -132,6 +167,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <Menu />
           </button>
+          {currentMeeting && (
+            <nav className="topbar-breadcrumb" aria-label="パンくず">
+              <Link href="/meetings">会議の準備・実施</Link>
+              <ChevronRight aria-hidden="true" />
+              <span aria-current="page">{currentMeeting[1]}</span>
+            </nav>
+          )}
           <div className="topbar-spacer" />
           <div className="school">
             <b>YOSSデモ小学校</b>

@@ -10,6 +10,7 @@ import type {
   SupportDirection,
   SupportRecord,
 } from "@/types";
+import { screeningCategories } from "@/config";
 const sur = [
     "青空",
     "朝比奈",
@@ -214,23 +215,16 @@ export const mockFlags: InternalFlag[] = [
   colorToken: x[3]!,
   isVisible: true,
 }));
-export const screeningDefinitions: ScreeningItemDefinition[] = [
-  ["school-life", "遅刻・欠席の状況"],
-  ["learning", "学習への参加"],
-  ["family", "生活状況"],
-  ["special-support", "合理的配慮"],
-  ["health", "健康状態"],
-  ["office", "就学支援"],
-  ["management", "校内共有"],
-  ["community", "地域との関係"],
-  ["other", "その他の気づき"],
-].map((x, i) => ({
-  id: `item-${i + 1}`,
-  category: x[0] as ScreeningItemDefinition["category"],
-  label: x[1]!,
-  description: "観察した事実に基づいて確認してください",
-  maxScore: 2,
-}));
+export const screeningDefinitions: ScreeningItemDefinition[] =
+  screeningCategories.flatMap((category) =>
+    category.items.map((label, index) => ({
+      id: `${category.id}-${index + 1}`,
+      category: category.id,
+      label,
+      description: `${category.label}「${label}」について、観察した事実に基づいて確認してください`,
+      maxScore: 2,
+    })),
+  );
 export const mockScreenings: ScreeningSession[] = mockStudents.map((s, i) => ({
   id: `screen-${i + 1}`,
   studentId: s.id,

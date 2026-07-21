@@ -60,15 +60,14 @@ export interface SupportAction {
   updatedAt: string;
 }
 export type ScreeningCategory =
-  | "school-life"
+  | "school-adaptation"
   | "learning"
   | "family"
-  | "special-support"
+  | "development"
   | "health"
-  | "office"
-  | "management"
-  | "community"
-  | "other";
+  | "economy"
+  | "welfare"
+  | "community";
 export type InformationSource =
   | "direct-observation"
   | "student"

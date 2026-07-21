@@ -19,31 +19,39 @@ export default async function Page() {
     repositories.records.getAll(),
     repositories.reference.getStaff(),
   ]);
+  const targetStudentCount = (targetActions: typeof actions) =>
+    new Set(targetActions.map((action) => action.studentId)).size;
   const stats = [
     {
       label: "期限超過",
       href: "/actions?status=overdue",
-      count: actions.filter(isOverdue).length,
+      count: targetStudentCount(actions.filter(isOverdue)),
       icon: AlertCircle,
     },
     {
       label: "期限間近",
       href: "/actions?due=soon",
-      count: actions.filter(
-        (a) => !!a.dueDate && a.dueDate >= today && a.dueDate <= "2026-07-29",
-      ).length,
+      count: targetStudentCount(
+        actions.filter(
+          (a) => !!a.dueDate && a.dueDate >= today && a.dueDate <= "2026-07-29",
+        ),
+      ),
       icon: Clock3,
     },
     {
       label: "対応中",
       href: "/actions?status=in-progress",
-      count: actions.filter((a) => a.status === "in-progress").length,
+      count: targetStudentCount(
+        actions.filter((a) => a.status === "in-progress"),
+      ),
       icon: CheckCircle2,
     },
     {
       label: "要再確認",
       href: "/actions?status=needs-review",
-      count: actions.filter((a) => a.status === "needs-review").length,
+      count: targetStudentCount(
+        actions.filter((a) => a.status === "needs-review"),
+      ),
       icon: RefreshCw,
     },
   ];
@@ -72,9 +80,9 @@ export default async function Page() {
                 <span>{label}</span>
                 <strong>
                   {count}
-                  <small>件</small>
+                  <small>人</small>
                 </strong>
-                <small>対象を確認してください</small>
+                <small>対象生徒数</small>
               </div>
               <ArrowRight />
             </Link>

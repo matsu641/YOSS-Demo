@@ -11,6 +11,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import { formatDate } from "@/lib/utils";
+import { ScreeningScoreTable } from "@/components/screening/screening-score-table";
 import {
   useActionStore,
   useMeetingStore,
@@ -28,34 +29,39 @@ const supports: {
     direction: "A",
     label: "教職員関与",
     options: [
-      "担任による面談",
-      "養護教諭による定期確認",
-      "生徒指導担当による対応",
-      "特別支援担当との連携",
-      "SSWとの校内連携",
-      "SCとの校内連携",
+      "担任のアプローチ",
+      "生徒指導や児童生徒支援のアプローチ",
+      "養護教諭のアプローチ",
+      "特別支援担当のアプローチ",
+      "学年団のアプローチ",
+      "SSWを活用したアプローチ",
+      "SCを活用したアプローチ",
+      "その他",
     ],
   },
   {
     direction: "B",
     label: "地域資源の活用",
     options: [
-      "学習支援",
-      "地域の居場所",
-      "子ども食堂",
-      "家庭教育支援",
-      "地域福祉サービス",
+      "家庭教育支援の活用",
+      "学習支援の活用",
+      "居場所、こども食堂の活用",
+      "単発の事業活用",
+      "地域人材の活用",
+      "学童保育の活用",
+      "地域の福祉サービスの活用（放課後デイ等）",
+      "その他",
     ],
   },
   {
     direction: "C",
     label: "専門機関の活用",
     options: [
-      "児童相談所",
-      "家庭児童相談室",
-      "教育センター",
-      "少年サポートセンター",
-      "医療・福祉相談機関",
+      "家庭児童相談室・児童相談所の活用",
+      "少年サポートセンターの活用",
+      "教育センターの活用",
+      "福祉制度（生活保護、母子相談等）の活用",
+      "その他",
     ],
   },
 ];
@@ -73,6 +79,9 @@ export function MeetingWorkspace({
     [decision, setDecision] = useState("pending"),
     [directions, setDirections] = useState<SupportDirection[]>([]),
     [options, setOptions] = useState<string[]>([]),
+    [supportStates, setSupportStates] = useState<
+      Record<string, "new" | "continue" | "reject">
+    >({}),
     [privateMemo, setPrivate] = useState(""),
     [sharedMemo, setShared] = useState(""),
     [actionTitle, setActionTitle] = useState(""),
@@ -129,6 +138,24 @@ export function MeetingWorkspace({
     const next = students[index + n];
     if (next) setId(next.id);
   };
+  const selectSupportState = (
+    direction: SupportDirection,
+    option: string,
+    state: "new" | "continue" | "reject",
+  ) => {
+    setSupportStates((current) => ({ ...current, [option]: state }));
+    setDirections((current) =>
+      current.includes(direction) ? current : [...current, direction],
+    );
+    setOptions((current) =>
+      state === "reject"
+        ? current.filter((item) => item !== option)
+        : current.includes(option)
+          ? current
+          : [...current, option],
+    );
+    if (state !== "reject") setActionTitle(option);
+  };
   return (
     <>
       <Card>
@@ -165,6 +192,58 @@ export function MeetingWorkspace({
           </b>
         </div>
       </Card>
+      {mode === "team" && (
+        <section className="support-direction-section section">
+          <div className="support-direction-title">
+            <span aria-hidden="true">🙂</span>
+            <h2>支援の方向性</h2>
+          </div>
+          <div className="support-direction-grid">
+            {supports.map((support) => (
+              <div
+                className={`support-direction-panel support-direction-${support.direction.toLowerCase()}`}
+                key={support.direction}
+              >
+                <h3>
+                  {support.direction} {support.label}
+                </h3>
+                <ol>
+                  {support.options.map((option) => (
+                    <li key={option}>
+                      <span>{option}</span>
+                      <div className="support-state-buttons">
+                        {[
+                          ["new", "新"],
+                          ["continue", "続"],
+                          ["reject", "拒"],
+                        ].map(([state, label]) => (
+                          <button
+                            type="button"
+                            key={state}
+                            className={
+                              supportStates[option] === state ? "selected" : ""
+                            }
+                            onClick={() =>
+                              selectSupportState(
+                                support.direction,
+                                option,
+                                state as "new" | "continue" | "reject",
+                              )
+                            }
+                            aria-label={`${option}を${label}に設定`}
+                          >
+                            {label}
+                          </button>
+                        ))}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       <div className="split section">
         <div>
           <Tabs
@@ -231,13 +310,8 @@ export function MeetingWorkspace({
           )}
           {tab === "screening" && (
             <Card>
-              {session?.responses.map((r) => (
-                <div className="list-row" key={r.itemId}>
-                  <b>{r.itemId}</b>
-                  <span>スコア {r.score}</span>
-                  <small>{r.observedFact}</small>
-                </div>
-              ))}
+              <h2>スクリーニング点数</h2>
+              <ScreeningScoreTable session={session} />
             </Card>
           )}
           {tab === "records" && (
@@ -285,46 +359,29 @@ export function MeetingWorkspace({
               </>
             ) : (
               <>
-                <h2>支援方向と支援候補</h2>
-                <p className="muted">会議で決定する内容です。</p>
+                <h2>会議メモとアクション</h2>
+                <p className="muted">上で選択した支援内容を具体化します。</p>
               </>
             )}
-            {supports.map((s) => (
-              <div className="support-options" key={s.direction}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={directions.includes(s.direction)}
-                    onChange={() =>
-                      setDirections((v) =>
-                        v.includes(s.direction)
-                          ? v.filter((d) => d !== s.direction)
-                          : [...v, s.direction],
-                      )
-                    }
-                  />
-                  <DirectionBadge direction={s.direction} />
-                </label>
-                {mode === "team" &&
-                  s.options.map((o) => (
-                    <label key={o}>
-                      <input
-                        type="checkbox"
-                        checked={options.includes(o)}
-                        onChange={() => {
-                          setOptions((v) =>
-                            v.includes(o)
-                              ? v.filter((x) => x !== o)
-                              : [...v, o],
-                          );
-                          setActionTitle(o);
-                        }}
-                      />
-                      {o}
-                    </label>
-                  ))}
-              </div>
-            ))}
+            {mode === "screening" &&
+              supports.map((s) => (
+                <div className="support-options" key={s.direction}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={directions.includes(s.direction)}
+                      onChange={() =>
+                        setDirections((v) =>
+                          v.includes(s.direction)
+                            ? v.filter((d) => d !== s.direction)
+                            : [...v, s.direction],
+                        )
+                      }
+                    />
+                    <DirectionBadge direction={s.direction} />
+                  </label>
+                </div>
+              ))}
             <Textarea
               label="個人メモ（自分のみ・権限制御はデモ）"
               value={privateMemo}

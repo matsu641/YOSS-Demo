@@ -14,11 +14,8 @@ import {
   Textarea,
 } from "@/components/ui";
 import { formatDate, today } from "@/lib/utils";
-import {
-  useActionStore,
-  useRecordStore,
-  useUiStore,
-} from "@/stores";
+import { ScreeningScoreTable } from "@/components/screening/screening-score-table";
+import { useActionStore, useRecordStore, useUiStore } from "@/stores";
 import type { MeetingRecord, ScreeningSession, Staff, Student } from "@/types";
 const tabItems = [
   { id: "overview", label: "概要" },
@@ -194,15 +191,8 @@ export function StudentDetail({
         )}
         {tab === "screening" && (
           <Card>
-            <h2>最新結果</h2>
-            <p>合計 {latest?.totalScore ?? "—"}点</p>
-            {latest?.responses.slice(0, 5).map((r) => (
-              <div className="list-row" key={r.itemId}>
-                <b>{r.itemId}</b>
-                <span>スコア {r.score}</span>
-                <small>{r.observedFact || "具体的事実は未入力"}</small>
-              </div>
-            ))}
+            <h2>スクリーニング点数</h2>
+            <ScreeningScoreTable session={latest} />
           </Card>
         )}
         {tab === "records" && (

@@ -2,7 +2,10 @@ import { PageHeader, Button } from "@/components/ui";
 import { StudentList } from "@/components/students/student-list";
 import { repositories } from "@/repositories";
 export default async function Page() {
-  const students = await repositories.students.getAll();
+  const [students, staff] = await Promise.all([
+    repositories.students.getAll(),
+    repositories.reference.getStaff(),
+  ]);
   return (
     <>
       <PageHeader
@@ -15,7 +18,7 @@ export default async function Page() {
           </>
         }
       />
-      <StudentList students={students} />
+      <StudentList students={students} staff={staff} />
     </>
   );
 }

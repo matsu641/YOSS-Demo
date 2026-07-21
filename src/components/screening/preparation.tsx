@@ -31,7 +31,7 @@ export function Preparation({
     router = useRouter(),
     initial = params.get("student") ?? students[0]?.id ?? "";
   const [id, setId] = useState(initial),
-    [cat, setCat] = useState<ScreeningCategory>("school-life"),
+    [cat, setCat] = useState<ScreeningCategory>("school-adaptation"),
     [saved, setSaved] = useState(true);
   const sessions = useScreeningStore((s) => s.sessions),
     save = useScreeningStore((s) => s.saveResponse),
