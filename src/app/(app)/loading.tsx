@@ -1,0 +1,1 @@
+export default function Loading(){return <div aria-label="読み込み中"><div className="skeleton"/><div className="grid grid-3 section"><div className="skeleton"/><div className="skeleton"/><div className="skeleton"/></div><div className="skeleton section"/></div>}
