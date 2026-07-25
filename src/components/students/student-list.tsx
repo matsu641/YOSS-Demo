@@ -323,8 +323,6 @@ export function StudentList({
                   Math.max(1, Math.ceil(total / 14)),
                 );
                 const highestScore = Math.max(...categoryTotals);
-                const highestIndex =
-                  highestScore > 0 ? categoryTotals.indexOf(highestScore) : -1;
                 const latestRecord = records
                   .filter((record) => record.studentId === student.id)
                   .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))[0];
@@ -428,12 +426,18 @@ export function StudentList({
                           <div className="student-score-detail-grid">
                             {screeningCategories.map((category, index) => (
                               <div
-                                className={`student-score-detail-card${index === highestIndex ? " is-highest" : ""}`}
+                                className={`student-score-detail-card${
+                                  highestScore > 0 &&
+                                  categoryTotals[index] === highestScore
+                                    ? " is-highest"
+                                    : ""
+                                }`}
                                 key={category.id}
                               >
                                 <span>{category.label}</span>
                                 <b>{categoryTotals[index]}</b>
-                                {index === highestIndex && (
+                                {highestScore > 0 &&
+                                  categoryTotals[index] === highestScore && (
                                   <small>最高点</small>
                                 )}
                               </div>

@@ -20,6 +20,7 @@ import {
   useScreeningStore,
   useUiStore,
 } from "@/stores";
+import { screeningCategories } from "@/config";
 import type { Staff, Student, SupportDirection } from "@/types";
 const supports: {
   direction: SupportDirection;
@@ -97,6 +98,34 @@ export function MeetingWorkspace({
     student = students.find((s) => s.id === id) ?? students[0],
     session = sessions.find((s) => s.studentId === student?.id);
   if (!student) return null;
+  const studentRecords = records
+    .filter((record) => record.studentId === student.id)
+    .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
+  const scoreByItem = new Map(
+    session?.responses.map((response) => [
+      response.itemId,
+      response.score ?? 0,
+    ]) ?? [],
+  );
+  const categoryScores = screeningCategories.map((category) => ({
+    label: category.label,
+    score: category.items.reduce(
+      (total, _item, index) =>
+        total + (scoreByItem.get(`${category.id}-${index + 1}`) ?? 0),
+      0,
+    ),
+    maxScore: category.items.length * 2,
+  }));
+  const highestCategoryScore = Math.max(
+    0,
+    ...categoryScores.map(({ score }) => score),
+  );
+  const calculatedScreeningScore = session
+    ? categoryScores.reduce((total, { score }) => total + score, 0)
+    : null;
+  const notableCategories = categoryScores
+    .filter(({ score }) => score > 0 && score === highestCategoryScore)
+    .map(({ label, score }) => `${label}（${score}点）`);
   const saveAll = () => {
     updateMeeting(student.id, {
       teamMeetingDecision: decision as "refer" | "do-not-refer" | "pending",
@@ -244,14 +273,14 @@ export function MeetingWorkspace({
                 <div className="grid grid-3 section">
                   <div>
                     <small>合計点</small>
-                    <h1>{student.latestScreeningScore ?? "—"}</h1>
+                    <h1>{calculatedScreeningScore ?? "—"}</h1>
                   </div>
                   <div>
                     <small>前回比</small>
                     <h1>
-                      {student.latestScreeningScore !== null &&
+                      {calculatedScreeningScore !== null &&
                       student.previousScreeningScore !== null
-                        ? student.latestScreeningScore -
+                        ? calculatedScreeningScore -
                           student.previousScreeningScore
                         : "—"}
                     </h1>
@@ -261,17 +290,44 @@ export function MeetingWorkspace({
                     <p>{session?.sharedConcernNote || "登録なし"}</p>
                   </div>
                 </div>
+                <section
+                  className="meeting-score-breakdown"
+                  aria-label="スコアサマリー"
+                >
+                  <h3>スコアサマリー</h3>
+                  <div className="meeting-score-breakdown-grid">
+                    {categoryScores.map(({ label, score, maxScore }) => (
+                      <div key={label}>
+                        <span>{label}</span>
+                        <p>
+                          <b>{score}</b>
+                          <small> / {maxScore}</small>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
               </Card>
               <Card className="section ai-demo">
-                <h3>AI参考判定・デモ</h3>
+                <h3>AIによる生徒理解のための参考情報・デモ</h3>
                 <p>
-                  <b>校内チーム会議への付議：</b> 付議を推奨
+                  <b>点数から見える傾向：</b>{" "}
+                  {notableCategories.length > 0
+                    ? `${notableCategories.join("、")}が相対的に高く、関連する状況を丁寧に確認する必要があります。`
+                    : "現時点では、点数から明確な傾向は確認できません。"}
                 </p>
                 <p>
-                  <b>参考支援方向：</b> A 教職員関与
+                  <b>記録されている事実：</b>{" "}
+                  {session?.sharedConcernNote ||
+                    studentRecords[0]?.content ||
+                    "参照できる具体的な記録はありません。"}
+                </p>
+                <p>
+                  <b>確認したいこと：</b>{" "}
+                  点数の背景や最近の変化について、本人の様子、本人・保護者の認識、教職員の観察記録を照合してください。
                 </p>
                 <small>
-                  この表示は静的ダミーデータであり、実際のAI処理は行っていません。
+                  AIは支援方向を決定しません。教師が点数と事実を確認し、支援の必要性と方向性を判断するための参考情報です。この表示はデモであり、実際のAI処理は行っていません。
                 </small>
               </Card>
             </>

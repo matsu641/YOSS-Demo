@@ -1153,6 +1153,41 @@ tbody tr:hover {
   align-items: center;
   justify-content: space-between;
 }
+.meeting-score-breakdown {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.meeting-score-breakdown h3 {
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+.meeting-score-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(74px, 1fr));
+  gap: 12px;
+}
+.meeting-score-breakdown-grid > div {
+  min-width: 0;
+}
+.meeting-score-breakdown-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.meeting-score-breakdown-grid p {
+  margin: 8px 0 0;
+  line-height: 1;
+}
+.meeting-score-breakdown-grid b {
+  font-size: 24px;
+}
+.meeting-score-breakdown-grid small {
+  color: var(--muted);
+  font-size: 12px;
+}
 .grade-counts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1790,6 +1825,9 @@ tbody tr:hover {
   .grid-4,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+  .meeting-score-breakdown-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .student-search-grid {
     grid-template-columns: 1fr;
