@@ -12,6 +12,7 @@ import {
   Database,
   FileCheck2,
   FileOutput,
+  HeartPulse,
   LayoutDashboard,
   Menu,
   RefreshCw,
@@ -121,6 +122,18 @@ export function AppShell({ children }: { children: ReactNode }) {
               ))}
             </div>
           )}
+          <Link
+            href="/support-effects"
+            title={collapsed ? "支援効果" : undefined}
+            className={cn(
+              "nav-item",
+              path === "/support-effects" && "active",
+            )}
+            onClick={() => open && toggle()}
+          >
+            <HeartPulse />
+            <span>支援効果</span>
+          </Link>
           <div className="nav-divider" />
           {displayOnlyNav.map(([label, Icon]) => (
             <button
