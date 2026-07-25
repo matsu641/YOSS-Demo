@@ -14,6 +14,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import { formatDate, today } from "@/lib/utils";
+import { calculateScreeningTotal } from "@/lib/screening";
 import { ScreeningScoreTable } from "@/components/screening/screening-score-table";
 import { useActionStore, useRecordStore, useUiStore } from "@/stores";
 import type { MeetingRecord, ScreeningSession, Staff, Student } from "@/types";
@@ -53,6 +54,7 @@ export function StudentDetail({
     addRecord = useRecordStore((s) => s.addRecord),
     toast = useUiStore((s) => s.toast);
   const latest = screenings[0];
+  const latestScreeningScore = calculateScreeningTotal(latest);
   const move = (n: number) => {
     const v = index + n;
     if (v >= 0 && v < total) router.push(`/students/student-${v + 1}`);
@@ -120,16 +122,16 @@ export function StudentDetail({
         <Card>
           <span className="muted">最新スクリーニング</span>
           <h1>
-            {student.latestScreeningScore ?? "—"}
+            {latestScreeningScore ?? "—"}
             <small> 点</small>
           </h1>
         </Card>
         <Card>
           <span className="muted">前回からの変化</span>
           <h1>
-            {student.latestScreeningScore !== null &&
+            {latestScreeningScore !== null &&
             student.previousScreeningScore !== null
-              ? student.latestScreeningScore - student.previousScreeningScore
+              ? latestScreeningScore - student.previousScreeningScore
               : "—"}
           </h1>
         </Card>

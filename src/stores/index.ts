@@ -17,6 +17,7 @@ import type {
   SupportAction,
   SupportRecord,
 } from "@/types";
+import { calculateScreeningTotal } from "@/lib/screening";
 export const useStudentStore = create<{
   students: Student[];
   recentIds: string[];
@@ -85,6 +86,13 @@ export const useScreeningStore = create<{
                     ...x.responses.filter((q) => q.itemId !== r.itemId),
                     r,
                   ],
+                  totalScore:
+                    calculateScreeningTotal({
+                      responses: [
+                        ...x.responses.filter((q) => q.itemId !== r.itemId),
+                        r,
+                      ],
+                    }) ?? 0,
                 }
               : x,
           ),

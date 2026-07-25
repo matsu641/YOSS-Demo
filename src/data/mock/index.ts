@@ -3,6 +3,7 @@ import type {
   MeetingRecord,
   RegionalResource,
   ScreeningItemDefinition,
+  ScreeningResponse,
   ScreeningSession,
   Staff,
   Student,
@@ -225,26 +226,32 @@ export const screeningDefinitions: ScreeningItemDefinition[] =
       maxScore: 2,
     })),
   );
-export const mockScreenings: ScreeningSession[] = mockStudents.map((s, i) => ({
-  id: `screen-${i + 1}`,
-  studentId: s.id,
-  academicYear: 2026,
-  term: "1学期",
-  meetingType: "screening",
-  responses: screeningDefinitions.map((d, k) => ({
+export const mockScreenings: ScreeningSession[] = mockStudents.map((s, i) => {
+  const responses: ScreeningResponse[] = screeningDefinitions.map((d, k) => ({
     itemId: d.id,
     score: (i + k) % 3,
     observedFact: k % 3 === 0 ? "授業中の様子を教職員が直接確認した。" : "",
     informationSource: "direct-observation",
     verificationStatus: "verified",
     note: "",
-  })),
-  sharedConcernNote:
-    i % 5 === 0 ? "観察事実と未確認情報を分けて共有する。" : "",
-  totalScore: s.latestScreeningScore ?? 0,
-  completedAt: i % 3 ? "2026-07-01" : null,
-  updatedAt: s.lastUpdatedAt,
-}));
+  }));
+  return {
+    id: `screen-${i + 1}`,
+    studentId: s.id,
+    academicYear: 2026,
+    term: "1学期",
+    meetingType: "screening",
+    responses,
+    sharedConcernNote:
+      i % 5 === 0 ? "観察事実と未確認情報を分けて共有する。" : "",
+    totalScore: responses.reduce(
+      (total, response) => total + (response.score ?? 0),
+      0,
+    ),
+    completedAt: i % 3 ? "2026-07-01" : null,
+    updatedAt: s.lastUpdatedAt,
+  };
+});
 export const mockMeetings: MeetingRecord[] = Array.from(
   { length: 24 },
   (_, i) => ({
