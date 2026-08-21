@@ -53,6 +53,7 @@ describe("スクリーニング準備画面", () => {
         {
           id: "session-test",
           studentId: "student-test",
+          evaluatorId: "staff-1",
           academicYear: 2026,
           term: "1学期",
           meetingType: "screening",

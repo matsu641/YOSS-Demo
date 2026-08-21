@@ -79,7 +79,8 @@ export const useScreeningStore = create<{
       saveResponse: (id, r) =>
         set((s) => ({
           sessions: s.sessions.map((x) =>
-            x.studentId === id
+            x.studentId === id &&
+            (!x.evaluatorId || x.evaluatorId === "staff-1")
               ? {
                   ...x,
                   responses: [
@@ -100,7 +101,10 @@ export const useScreeningStore = create<{
       saveConcern: (id, n) =>
         set((s) => ({
           sessions: s.sessions.map((x) =>
-            x.studentId === id ? { ...x, sharedConcernNote: n } : x,
+            x.studentId === id &&
+            (!x.evaluatorId || x.evaluatorId === "staff-1")
+              ? { ...x, sharedConcernNote: n }
+              : x,
           ),
         })),
     }),

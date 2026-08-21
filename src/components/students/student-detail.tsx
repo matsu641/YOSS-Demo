@@ -53,7 +53,12 @@ export function StudentDetail({
     ),
     addRecord = useRecordStore((s) => s.addRecord),
     toast = useUiStore((s) => s.toast);
-  const latest = screenings[0];
+  const latest =
+    screenings.find((screening) => screening.evaluatorId === "staff-1") ??
+    screenings[0];
+  const otherEvaluations = screenings.filter(
+    (screening) => screening.id !== latest?.id,
+  );
   const latestScreeningScore = calculateScreeningTotal(latest);
   const move = (n: number) => {
     const v = index + n;
@@ -192,10 +197,45 @@ export function StudentDetail({
           </div>
         )}
         {tab === "screening" && (
-          <Card>
-            <h2>スクリーニング点数</h2>
-            <ScreeningScoreTable session={latest} />
-          </Card>
+          <div className="grid">
+            <Card>
+              <h2>自分のスクリーニング評価</h2>
+              <ScreeningScoreTable session={latest} />
+            </Card>
+            <Card>
+              <h2>他の先生の評価</h2>
+              <p className="muted">
+                必要な記録だけを開いて、評価の違いや共通点を確認できます。
+              </p>
+              {otherEvaluations.length > 0 ? (
+                otherEvaluations.map((evaluation) => (
+                  <details className="teacher-evaluation" key={evaluation.id}>
+                    <summary>
+                      <span>
+                        <b>
+                          {staff.find(
+                            (member) => member.id === evaluation.evaluatorId,
+                          )?.name ?? "担当者不明"}
+                        </b>
+                        <small>
+                          {formatDate(
+                            evaluation.completedAt ?? evaluation.updatedAt,
+                          )}
+                        </small>
+                      </span>
+                      <strong>{evaluation.totalScore}点</strong>
+                    </summary>
+                    {evaluation.sharedConcernNote && (
+                      <p>{evaluation.sharedConcernNote}</p>
+                    )}
+                    <ScreeningScoreTable session={evaluation} />
+                  </details>
+                ))
+              ) : (
+                <p className="muted">他の先生による評価はまだありません。</p>
+              )}
+            </Card>
+          </div>
         )}
         {tab === "records" && (
           <>

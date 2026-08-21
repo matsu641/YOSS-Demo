@@ -13,11 +13,12 @@ import { repositories, isOverdue } from "@/repositories";
 import { formatDate, today } from "@/lib/utils";
 import type { SupportDirection } from "@/types";
 export default async function Page() {
-  const [students, actions, records, staff] = await Promise.all([
+  const [students, actions, records, staff, screenings] = await Promise.all([
     repositories.students.getAll(),
     repositories.actions.getAll(),
     repositories.records.getAll(),
     repositories.reference.getStaff(),
+    repositories.reference.getScreenings(),
   ]);
   const targetStudentCount = (targetActions: typeof actions) =>
     new Set(targetActions.map((action) => action.studentId)).size;
@@ -174,6 +175,45 @@ export default async function Page() {
           </Card>
         </section>
       </div>
+      <section className="section">
+        <div className="section-head">
+          <h2>教職員のスクリーニング評価</h2>
+          <span className="muted">最近更新された評価</span>
+        </div>
+        <Card>
+          {[...screenings]
+            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+            .slice(0, 8)
+            .map((screening) => {
+              const student = students.find(
+                (item) => item.id === screening.studentId,
+              );
+              const evaluator = staff.find(
+                (member) => member.id === screening.evaluatorId,
+              );
+              return (
+                <div className="list-row" key={screening.id}>
+                  <span className="avatar">
+                    {evaluator?.avatarInitials ?? "?"}
+                  </span>
+                  <div>
+                    <Link href={`/students/${screening.studentId}`}>
+                      <b>{student?.name}</b>
+                    </Link>
+                    <small>
+                      {evaluator?.name ?? "担当者不明"}・{screening.totalScore}
+                      点
+                    </small>
+                    {screening.sharedConcernNote && (
+                      <small>{screening.sharedConcernNote}</small>
+                    )}
+                  </div>
+                  <small>{formatDate(screening.updatedAt)}</small>
+                </div>
+              );
+            })}
+        </Card>
+      </section>
       <section className="section">
         <h2>会議を進める</h2>
         <div className="grid grid-3">

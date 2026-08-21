@@ -226,7 +226,7 @@ export const screeningDefinitions: ScreeningItemDefinition[] =
       maxScore: 2,
     })),
   );
-export const mockScreenings: ScreeningSession[] = mockStudents.map((s, i) => {
+const primaryScreenings: ScreeningSession[] = mockStudents.map((s, i) => {
   const responses: ScreeningResponse[] = screeningDefinitions.map((d, k) => ({
     itemId: d.id,
     score: (i + k) % 3,
@@ -238,6 +238,7 @@ export const mockScreenings: ScreeningSession[] = mockStudents.map((s, i) => {
   return {
     id: `screen-${i + 1}`,
     studentId: s.id,
+    evaluatorId: "staff-1",
     academicYear: 2026,
     term: "1学期",
     meetingType: "screening",
@@ -252,6 +253,38 @@ export const mockScreenings: ScreeningSession[] = mockStudents.map((s, i) => {
     updatedAt: s.lastUpdatedAt,
   };
 });
+const colleagueScreenings: ScreeningSession[] = primaryScreenings
+  .slice(0, 12)
+  .map((session, index) => {
+    const responses = session.responses.map((response, responseIndex) => ({
+      ...response,
+      score:
+        response.score === null
+          ? null
+          : (response.score + index + responseIndex + 1) % 3,
+      observedFact:
+        responseIndex % 4 === 0
+          ? "別の教職員が授業や休み時間の様子を確認した。"
+          : "",
+    }));
+    return {
+      ...session,
+      id: `screen-colleague-${index + 1}`,
+      evaluatorId: `staff-${(index % 5) + 2}`,
+      responses,
+      sharedConcernNote: "複数の場面で見られた様子を共有し、継続して確認する。",
+      totalScore: responses.reduce(
+        (total, response) => total + (response.score ?? 0),
+        0,
+      ),
+      completedAt: `2026-07-${String(12 + (index % 8)).padStart(2, "0")}`,
+      updatedAt: `2026-07-${String(12 + (index % 8)).padStart(2, "0")}T15:00:00+09:00`,
+    };
+  });
+export const mockScreenings: ScreeningSession[] = [
+  ...primaryScreenings,
+  ...colleagueScreenings,
+];
 export const mockMeetings: MeetingRecord[] = Array.from(
   { length: 24 },
   (_, i) => ({

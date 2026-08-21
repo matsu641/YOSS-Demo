@@ -95,6 +95,7 @@ export interface ScreeningResponse {
 export interface ScreeningSession {
   id: string;
   studentId: string;
+  evaluatorId: string;
   academicYear: number;
   term: string;
   meetingType: string;
