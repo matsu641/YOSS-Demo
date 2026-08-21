@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, Plus } from "lucide-react";
 import {
   Button,
   Card,
@@ -223,7 +223,10 @@ export function StudentDetail({
                           )}
                         </small>
                       </span>
-                      <strong>{evaluation.totalScore}点</strong>
+                      <span className="teacher-evaluation-toggle">
+                        <strong>{evaluation.totalScore}点</strong>
+                        <ChevronDown aria-hidden="true" />
+                      </span>
                     </summary>
                     {evaluation.sharedConcernNote && (
                       <p>{evaluation.sharedConcernNote}</p>

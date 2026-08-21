@@ -1929,6 +1929,20 @@ tbody tr:hover {
 .teacher-evaluation summary small {
   display: block;
 }
+.teacher-evaluation .teacher-evaluation-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand);
+}
+.teacher-evaluation-toggle svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 160ms ease;
+}
+.teacher-evaluation[open] .teacher-evaluation-toggle svg {
+  transform: rotate(180deg);
+}
 .teacher-evaluation[open] summary {
   margin-bottom: 14px;
 }
