@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import {
   Button,
   Card,
@@ -96,8 +96,15 @@ export function MeetingWorkspace({
     updateMeeting = useMeetingStore((s) => s.updateMeeting),
     toast = useUiStore((s) => s.toast),
     student = students.find((s) => s.id === id) ?? students[0],
-    session = sessions.find((s) => s.studentId === student?.id);
+    session =
+      sessions.find(
+        (s) => s.studentId === student?.id && s.evaluatorId === "staff-1",
+      ) ?? sessions.find((s) => s.studentId === student?.id);
   if (!student) return null;
+  const otherEvaluations = sessions.filter(
+    (screening) =>
+      screening.studentId === student.id && screening.id !== session?.id,
+  );
   const studentRecords = records
     .filter((record) => record.studentId === student.id)
     .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
@@ -329,6 +336,42 @@ export function MeetingWorkspace({
                 <small>
                   AIは支援方向を決定しません。教師が点数と事実を確認し、支援の必要性と方向性を判断するための参考情報です。この表示はデモであり、実際のAI処理は行っていません。
                 </small>
+              </Card>
+              <Card className="section">
+                <h2>他の先生の評価</h2>
+                <p className="muted">
+                  必要な記録を開いて、評価の違いや共通点を会議で確認できます。
+                </p>
+                {otherEvaluations.length > 0 ? (
+                  otherEvaluations.map((evaluation) => (
+                    <details className="teacher-evaluation" key={evaluation.id}>
+                      <summary>
+                        <span>
+                          <b>
+                            {staff.find(
+                              (member) => member.id === evaluation.evaluatorId,
+                            )?.name ?? "担当者不明"}
+                          </b>
+                          <small>
+                            {formatDate(
+                              evaluation.completedAt ?? evaluation.updatedAt,
+                            )}
+                          </small>
+                        </span>
+                        <span className="teacher-evaluation-toggle">
+                          <strong>{evaluation.totalScore}点</strong>
+                          <ChevronDown aria-hidden="true" />
+                        </span>
+                      </summary>
+                      {evaluation.sharedConcernNote && (
+                        <p>{evaluation.sharedConcernNote}</p>
+                      )}
+                      <ScreeningScoreTable session={evaluation} />
+                    </details>
+                  ))
+                ) : (
+                  <p className="muted">他の先生による評価はまだありません。</p>
+                )}
               </Card>
             </>
           )}
