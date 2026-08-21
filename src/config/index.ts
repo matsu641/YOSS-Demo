@@ -46,7 +46,6 @@ export const screeningCategories = [
     items: [
       "転入",
       "不登校",
-      "7日+",
       "遅刻",
       "服装",
       "言葉",
