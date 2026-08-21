@@ -1247,6 +1247,39 @@ tbody tr:hover {
   color: var(--muted);
   margin-top: 3px;
 }
+.dashboard-evaluation-details > summary {
+  width: fit-content;
+  margin: 16px auto 0;
+  list-style: none;
+}
+.dashboard-evaluation-details > summary::-webkit-details-marker {
+  display: none;
+}
+.dashboard-evaluation-details[open] > summary {
+  margin-bottom: 4px;
+}
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+}
+.dashboard-bottom-grid > section {
+  min-width: 0;
+}
+.dashboard-evaluation-card {
+  margin-top: 16px;
+}
+.dashboard-evaluation-row > small:last-child {
+  flex-shrink: 0;
+}
+.dashboard-meeting-links {
+  margin-top: 16px;
+}
+@media (max-width: 960px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .meeting-link > svg:last-child {
   margin-left: auto;
 }

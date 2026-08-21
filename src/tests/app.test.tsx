@@ -28,6 +28,7 @@ describe("複数教員の評価", () => {
     expect(
       screen.getByRole("heading", { name: "教職員のスクリーニング評価" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("詳細を見る")).toBeInTheDocument();
   });
 });
 describe("生徒Repository", () => {
@@ -61,16 +62,14 @@ describe("状態表示", () => {
 });
 describe("スクリーニング保存", () => {
   it("生徒ごとの入力をストアへ反映する", () => {
-    useScreeningStore
-      .getState()
-      .saveResponse("student-1", {
-        itemId: "item-1",
-        score: 2,
-        observedFact: "確認した事実",
-        informationSource: "direct-observation",
-        verificationStatus: "verified",
-        note: "",
-      });
+    useScreeningStore.getState().saveResponse("student-1", {
+      itemId: "item-1",
+      score: 2,
+      observedFact: "確認した事実",
+      informationSource: "direct-observation",
+      verificationStatus: "verified",
+      note: "",
+    });
     const session = useScreeningStore
       .getState()
       .sessions.find((s) => s.studentId === "student-1");

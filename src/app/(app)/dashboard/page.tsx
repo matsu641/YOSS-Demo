@@ -57,6 +57,32 @@ export default async function Page() {
     },
   ];
   const ds: SupportDirection[] = ["A", "B", "C"];
+  const recentScreenings = [...screenings]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, 8);
+  const screeningRow = (screening: (typeof screenings)[number]) => {
+    const student = students.find((item) => item.id === screening.studentId);
+    const evaluator = staff.find(
+      (member) => member.id === screening.evaluatorId,
+    );
+    return (
+      <div className="list-row dashboard-evaluation-row" key={screening.id}>
+        <span className="avatar">{evaluator?.avatarInitials ?? "?"}</span>
+        <div>
+          <Link href={`/students/${screening.studentId}`}>
+            <b>{student?.name}</b>
+          </Link>
+          <small>
+            {evaluator?.name ?? "担当者不明"}・{screening.totalScore}点
+          </small>
+          {screening.sharedConcernNote && (
+            <small>{screening.sharedConcernNote}</small>
+          )}
+        </div>
+        <small>{formatDate(screening.updatedAt)}</small>
+      </div>
+    );
+  };
   return (
     <>
       <PageHeader
@@ -175,79 +201,57 @@ export default async function Page() {
           </Card>
         </section>
       </div>
-      <section className="section">
-        <div className="section-head">
-          <h2>教職員のスクリーニング評価</h2>
-          <span className="muted">最近更新された評価</span>
-        </div>
-        <Card>
-          {[...screenings]
-            .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-            .slice(0, 8)
-            .map((screening) => {
-              const student = students.find(
-                (item) => item.id === screening.studentId,
-              );
-              const evaluator = staff.find(
-                (member) => member.id === screening.evaluatorId,
-              );
-              return (
-                <div className="list-row" key={screening.id}>
-                  <span className="avatar">
-                    {evaluator?.avatarInitials ?? "?"}
-                  </span>
-                  <div>
-                    <Link href={`/students/${screening.studentId}`}>
-                      <b>{student?.name}</b>
-                    </Link>
-                    <small>
-                      {evaluator?.name ?? "担当者不明"}・{screening.totalScore}
-                      点
-                    </small>
-                    {screening.sharedConcernNote && (
-                      <small>{screening.sharedConcernNote}</small>
-                    )}
-                  </div>
-                  <small>{formatDate(screening.updatedAt)}</small>
+      <div className="dashboard-bottom-grid section">
+        <section>
+          <div className="section-head">
+            <h2>教職員のスクリーニング評価</h2>
+            <span className="muted">最近更新された評価</span>
+          </div>
+          <Card className="dashboard-evaluation-card">
+            {recentScreenings.slice(0, 3).map(screeningRow)}
+            {recentScreenings.length > 3 && (
+              <details className="dashboard-evaluation-details">
+                <summary className="button button-outline">詳細を見る</summary>
+                {recentScreenings.slice(3).map(screeningRow)}
+              </details>
+            )}
+          </Card>
+        </section>
+        <section>
+          <h2>会議を進める</h2>
+          <div className="grid dashboard-meeting-links">
+            {[
+              {
+                h: "/screening/prepare",
+                t: "スクリーニング会議を準備する",
+                d: "事前情報を入力",
+                I: Users,
+              },
+              {
+                h: "/screening/meeting",
+                t: "スクリーニング会議を実施する",
+                d: "判定とメモを記録",
+                I: CalendarCheck,
+              },
+              {
+                h: "/team-meeting",
+                t: "校内チーム会議を実施する",
+                d: "支援内容を決定",
+                I: CheckCircle2,
+              },
+            ].map(({ h, t, d, I }) => (
+              <Link href={h} className="meeting-link" key={h}>
+                <I />
+                <div>
+                  <b>{t}</b>
+                  <span>{d}</span>
                 </div>
-              );
-            })}
-        </Card>
-      </section>
-      <section className="section">
-        <h2>会議を進める</h2>
-        <div className="grid grid-3">
-          {[
-            {
-              h: "/screening/prepare",
-              t: "スクリーニング会議を準備する",
-              d: "事前情報を入力",
-              I: Users,
-            },
-            {
-              h: "/screening/meeting",
-              t: "スクリーニング会議を実施する",
-              d: "判定とメモを記録",
-              I: CalendarCheck,
-            },
-            {
-              h: "/team-meeting",
-              t: "校内チーム会議を実施する",
-              d: "支援内容を決定",
-              I: CheckCircle2,
-            },
-          ].map(({ h, t, d, I }) => (
-            <Link href={h} className="meeting-link" key={h}>
-              <I />
-              <div>
-                <b>{t}</b>
-                <span>{d}</span>
-              </div>
-              <ArrowRight />
-            </Link>
-          ))}
-        </div>
-      </section>
+                <ArrowRight />
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
     </>
   );
 }
