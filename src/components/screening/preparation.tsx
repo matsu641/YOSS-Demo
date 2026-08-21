@@ -123,22 +123,27 @@ export function Preparation({
                     ))}
                   </fieldset>
                   <div className="section">
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleMemo(item.id)}
-                      aria-expanded={isMemoOpen}
-                      aria-controls={`memo-${item.id}`}
-                    >
-                      {isMemoOpen ? <ChevronUp /> : <Plus />}
-                      {isMemoOpen
-                        ? "メモ入力を閉じる"
-                        : hasMemo
-                          ? "入力済みメモを確認・編集"
-                          : "メモを追加する"}
-                    </Button>
-                    {hasMemo && !isMemoOpen && (
-                      <small className="muted">入力済みのメモがあります</small>
-                    )}
+                    <div className="screening-memo-actions">
+                      <Button
+                        className="screening-memo-button"
+                        variant="outline"
+                        onClick={() => toggleMemo(item.id)}
+                        aria-expanded={isMemoOpen}
+                        aria-controls={`memo-${item.id}`}
+                      >
+                        {isMemoOpen ? <ChevronUp /> : <Plus />}
+                        {isMemoOpen
+                          ? "メモ入力を閉じる"
+                          : hasMemo
+                            ? "入力済みメモを確認・編集"
+                            : "メモを追加する"}
+                      </Button>
+                      {hasMemo && !isMemoOpen && (
+                        <small className="muted">
+                          入力済みのメモがあります
+                        </small>
+                      )}
+                    </div>
                     {isMemoOpen && (
                       <div className="form-grid section" id={`memo-${item.id}`}>
                         <Textarea

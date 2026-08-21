@@ -611,6 +611,21 @@ tbody tr:hover {
   font-size: 13px;
   font-weight: 700;
 }
+.screening-memo-actions {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 6px;
+}
+.screening-memo-button.button {
+  min-height: 32px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+.screening-memo-button svg {
+  width: 16px;
+  height: 16px;
+}
 .student-search-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(160px, 1fr));
