@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { Button, DirectionBadge, Input, Select } from "@/components/ui";
-import type { Staff, Student } from "@/types";
+import type { Staff, Student, SupportDirection } from "@/types";
 
 interface MeetingSearchFiltersProps {
   students: Student[];
@@ -31,6 +31,9 @@ export function MeetingSearchFilters({
   const [className, setClassName] = useState("");
   const [studentName, setStudentName] = useState("");
   const [assignee, setAssignee] = useState("");
+  const [minScore, setMinScore] = useState("");
+  const [maxScore, setMaxScore] = useState("");
+  const [direction, setDirection] = useState<SupportDirection | "">("");
   const [isSearchOpen, setIsSearchOpen] = useState(true);
   const selectedStudent =
     students.find((student) => student.id === selectedId) ?? students[0];
@@ -48,9 +51,23 @@ export function MeetingSearchFilters({
             student.name
               .toLocaleLowerCase("ja")
               .includes(studentName.toLocaleLowerCase("ja"))) &&
-          (!assignee || student.assignedTeacherId === assignee),
+          (!assignee || student.assignedTeacherId === assignee) &&
+          (!minScore ||
+            (student.latestScreeningScore ?? -1) >= Number(minScore)) &&
+          (!maxScore ||
+            (student.latestScreeningScore ?? Infinity) <= Number(maxScore)) &&
+          (!direction || student.supportDirections.includes(direction)),
       ),
-    [assignee, className, grade, studentName, students],
+    [
+      assignee,
+      className,
+      direction,
+      grade,
+      maxScore,
+      minScore,
+      studentName,
+      students,
+    ],
   );
 
   const applyCandidates = (next: Student[]) => {
@@ -64,11 +81,17 @@ export function MeetingSearchFilters({
     nextClassName = className,
     nextStudentName = studentName,
     nextAssignee = assignee,
+    nextMinScore = minScore,
+    nextMaxScore = maxScore,
+    nextDirection = direction,
   }: {
     nextGrade?: string;
     nextClassName?: string;
     nextStudentName?: string;
     nextAssignee?: string;
+    nextMinScore?: string;
+    nextMaxScore?: string;
+    nextDirection?: SupportDirection | "";
   }) =>
     students.filter(
       (student) =>
@@ -78,7 +101,12 @@ export function MeetingSearchFilters({
           student.name
             .toLocaleLowerCase("ja")
             .includes(nextStudentName.toLocaleLowerCase("ja"))) &&
-        (!nextAssignee || student.assignedTeacherId === nextAssignee),
+        (!nextAssignee || student.assignedTeacherId === nextAssignee) &&
+        (!nextMinScore ||
+          (student.latestScreeningScore ?? -1) >= Number(nextMinScore)) &&
+        (!nextMaxScore ||
+          (student.latestScreeningScore ?? Infinity) <= Number(nextMaxScore)) &&
+        (!nextDirection || student.supportDirections.includes(nextDirection)),
     );
 
   const clearAll = () => {
@@ -88,6 +116,9 @@ export function MeetingSearchFilters({
     setClassName("");
     setStudentName("");
     setAssignee("");
+    setMinScore("");
+    setMaxScore("");
+    setDirection("");
   };
 
   const activeConditions = [
@@ -141,6 +172,42 @@ export function MeetingSearchFilters({
             clear: () => {
               setAssignee("");
               applyCandidates(filterStudents({ nextAssignee: "" }));
+            },
+          },
+        ]
+      : []),
+    ...(minScore
+      ? [
+          {
+            key: "minScore",
+            label: `${minScore}点以上`,
+            clear: () => {
+              setMinScore("");
+              applyCandidates(filterStudents({ nextMinScore: "" }));
+            },
+          },
+        ]
+      : []),
+    ...(maxScore
+      ? [
+          {
+            key: "maxScore",
+            label: `${maxScore}点以下`,
+            clear: () => {
+              setMaxScore("");
+              applyCandidates(filterStudents({ nextMaxScore: "" }));
+            },
+          },
+        ]
+      : []),
+    ...(direction
+      ? [
+          {
+            key: "direction",
+            label: `判定：${direction}`,
+            clear: () => {
+              setDirection("");
+              applyCandidates(filterStudents({ nextDirection: "" }));
             },
           },
         ]
@@ -290,6 +357,44 @@ export function MeetingSearchFilters({
                 </option>
               ))}
             </Select>
+            <Input
+              label="スコア（下限）"
+              type="number"
+              min="0"
+              value={minScore}
+              placeholder="0"
+              onChange={(event) => {
+                const value = event.target.value;
+                setMinScore(value);
+                applyCandidates(filterStudents({ nextMinScore: value }));
+              }}
+            />
+            <Input
+              label="スコア（上限）"
+              type="number"
+              min="0"
+              value={maxScore}
+              placeholder="上限なし"
+              onChange={(event) => {
+                const value = event.target.value;
+                setMaxScore(value);
+                applyCandidates(filterStudents({ nextMaxScore: value }));
+              }}
+            />
+            <Select
+              label="判定"
+              value={direction}
+              onChange={(event) => {
+                const value = event.target.value as SupportDirection | "";
+                setDirection(value);
+                applyCandidates(filterStudents({ nextDirection: value }));
+              }}
+            >
+              <option value="">すべて</option>
+              <option value="A">A 教職員関与</option>
+              <option value="B">B 地域資源</option>
+              <option value="C">C 専門機関</option>
+            </Select>
           </div>
           {activeConditions.length > 0 && (
             <div className="student-search-active-row meeting-search-active-row">
@@ -350,6 +455,9 @@ export function MeetingSearchFilters({
                         {student.attendanceNumber}番
                       </span>
                       <span>担当：{teacher?.name ?? "未設定"}</span>
+                      <span>
+                        スコア：{student.latestScreeningScore ?? "未実施"}
+                      </span>
                       <ChevronDown
                         className="meeting-search-candidate-arrow"
                         size={17}
