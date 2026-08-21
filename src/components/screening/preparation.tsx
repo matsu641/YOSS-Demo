@@ -108,21 +108,21 @@ export function Preparation({
                 <Card key={item.id}>
                   <h2>{item.label}</h2>
                   <p className="muted">{item.description}</p>
-                  <fieldset className="score-selector">
-                    <legend>スコア</legend>
-                    {SCREENING_SCORE_OPTIONS.map((n) => (
-                      <label key={n}>
-                        <input
-                          type="radio"
-                          name={item.id}
-                          checked={r?.score === n}
-                          onChange={() => change(item, { score: n })}
-                        />
-                        <span>{n}</span>
-                      </label>
-                    ))}
-                  </fieldset>
-                  <div className="section">
+                  <div className="screening-score-actions-row">
+                    <fieldset className="score-selector">
+                      <legend>スコア</legend>
+                      {SCREENING_SCORE_OPTIONS.map((n) => (
+                        <label key={n}>
+                          <input
+                            type="radio"
+                            name={item.id}
+                            checked={r?.score === n}
+                            onChange={() => change(item, { score: n })}
+                          />
+                          <span>{n}</span>
+                        </label>
+                      ))}
+                    </fieldset>
                     <div className="screening-memo-actions">
                       <Button
                         className="screening-memo-button"
@@ -144,64 +144,62 @@ export function Preparation({
                         </small>
                       )}
                     </div>
-                    {isMemoOpen && (
-                      <div className="form-grid section" id={`memo-${item.id}`}>
-                        <Textarea
-                          label="観察された事実"
-                          placeholder="例：今週、昼食を持参していない日が3日あった"
-                          value={r?.observedFact ?? ""}
+                  </div>
+                  {isMemoOpen && (
+                    <div className="form-grid section" id={`memo-${item.id}`}>
+                      <Textarea
+                        label="観察された事実"
+                        placeholder="例：今週、昼食を持参していない日が3日あった"
+                        value={r?.observedFact ?? ""}
+                        onChange={(e) =>
+                          change(item, { observedFact: e.target.value })
+                        }
+                      />
+                      <div className="grid">
+                        <Select
+                          label="情報源"
+                          value={r?.informationSource ?? ""}
                           onChange={(e) =>
-                            change(item, { observedFact: e.target.value })
+                            change(item, {
+                              informationSource: e.target
+                                .value as ScreeningResponse["informationSource"],
+                            })
+                          }
+                        >
+                          <option value="">選択してください</option>
+                          {Object.entries(sourceLabels).map(([v, l]) => (
+                            <option value={v} key={v}>
+                              {l}
+                            </option>
+                          ))}
+                        </Select>
+                        <Select
+                          label="確認状態"
+                          value={r?.verificationStatus ?? ""}
+                          onChange={(e) =>
+                            change(item, {
+                              verificationStatus: e.target
+                                .value as ScreeningResponse["verificationStatus"],
+                            })
+                          }
+                        >
+                          <option value="">選択してください</option>
+                          {Object.entries(verificationLabels).map(([v, l]) => (
+                            <option value={v} key={v}>
+                              {l}
+                            </option>
+                          ))}
+                        </Select>
+                        <Input
+                          label="補足"
+                          value={r?.note ?? ""}
+                          onChange={(e) =>
+                            change(item, { note: e.target.value })
                           }
                         />
-                        <div className="grid">
-                          <Select
-                            label="情報源"
-                            value={r?.informationSource ?? ""}
-                            onChange={(e) =>
-                              change(item, {
-                                informationSource: e.target
-                                  .value as ScreeningResponse["informationSource"],
-                              })
-                            }
-                          >
-                            <option value="">選択してください</option>
-                            {Object.entries(sourceLabels).map(([v, l]) => (
-                              <option value={v} key={v}>
-                                {l}
-                              </option>
-                            ))}
-                          </Select>
-                          <Select
-                            label="確認状態"
-                            value={r?.verificationStatus ?? ""}
-                            onChange={(e) =>
-                              change(item, {
-                                verificationStatus: e.target
-                                  .value as ScreeningResponse["verificationStatus"],
-                              })
-                            }
-                          >
-                            <option value="">選択してください</option>
-                            {Object.entries(verificationLabels).map(
-                              ([v, l]) => (
-                                <option value={v} key={v}>
-                                  {l}
-                                </option>
-                              ),
-                            )}
-                          </Select>
-                          <Input
-                            label="補足"
-                            value={r?.note ?? ""}
-                            onChange={(e) =>
-                              change(item, { note: e.target.value })
-                            }
-                          />
-                        </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </Card>
               );
             })}

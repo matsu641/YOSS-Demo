@@ -611,6 +611,12 @@ tbody tr:hover {
   font-size: 13px;
   font-weight: 700;
 }
+.screening-score-actions-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
 .screening-memo-actions {
   display: flex;
   align-items: flex-end;
@@ -625,6 +631,12 @@ tbody tr:hover {
 .screening-memo-button svg {
   width: 16px;
   height: 16px;
+}
+@media (max-width: 640px) {
+  .screening-score-actions-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
 .student-search-grid {
   display: grid;
