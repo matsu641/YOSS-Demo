@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Check, Save } from "lucide-react";
-import { Card, Input, Select, Tabs, Textarea } from "@/components/ui";
+import { ChevronUp, Plus } from "lucide-react";
+import { Button, Card, Input, Select, Tabs, Textarea } from "@/components/ui";
 import { MeetingSearchFilters } from "@/components/meetings/meeting-search-filters";
 import {
   SCREENING_SCORE_OPTIONS,
@@ -36,7 +36,8 @@ export function Preparation({
     initial = params.get("student") ?? students[0]?.id ?? "";
   const [id, setId] = useState(initial),
     [cat, setCat] = useState<ScreeningCategory>("school-adaptation"),
-    [saved, setSaved] = useState(true);
+    [saved, setSaved] = useState(true),
+    [openMemos, setOpenMemos] = useState<Set<string>>(new Set());
   const sessions = useScreeningStore((s) => s.sessions),
     save = useScreeningStore((s) => s.saveResponse),
     saveConcern = useScreeningStore((s) => s.saveConcern);
@@ -64,6 +65,14 @@ export function Preparation({
     setSaved(false);
     save(student.id, { ...old, ...patch });
   };
+  const toggleMemo = (itemId: string) => {
+    setOpenMemos((current) => {
+      const next = new Set(current);
+      if (next.has(itemId)) next.delete(itemId);
+      else next.add(itemId);
+      return next;
+    });
+  };
   return (
     <>
       <div className="sticky-form-head">
@@ -88,6 +97,13 @@ export function Preparation({
             .filter((d) => d.category === cat)
             .map((item) => {
               const r = session?.responses.find((x) => x.itemId === item.id);
+              const isMemoOpen = openMemos.has(item.id);
+              const hasMemo = Boolean(
+                r?.observedFact ||
+                r?.informationSource ||
+                r?.verificationStatus ||
+                r?.note,
+              );
               return (
                 <Card key={item.id}>
                   <h2>{item.label}</h2>
@@ -106,56 +122,80 @@ export function Preparation({
                       </label>
                     ))}
                   </fieldset>
-                  <div className="form-grid section">
-                    <Textarea
-                      label="観察された事実"
-                      placeholder="例：今週、昼食を持参していない日が3日あった"
-                      value={r?.observedFact ?? ""}
-                      onChange={(e) =>
-                        change(item, { observedFact: e.target.value })
-                      }
-                    />
-                    <div className="grid">
-                      <Select
-                        label="情報源"
-                        value={r?.informationSource ?? ""}
-                        onChange={(e) =>
-                          change(item, {
-                            informationSource: e.target
-                              .value as ScreeningResponse["informationSource"],
-                          })
-                        }
-                      >
-                        <option value="">選択してください</option>
-                        {Object.entries(sourceLabels).map(([v, l]) => (
-                          <option value={v} key={v}>
-                            {l}
-                          </option>
-                        ))}
-                      </Select>
-                      <Select
-                        label="確認状態"
-                        value={r?.verificationStatus ?? ""}
-                        onChange={(e) =>
-                          change(item, {
-                            verificationStatus: e.target
-                              .value as ScreeningResponse["verificationStatus"],
-                          })
-                        }
-                      >
-                        <option value="">選択してください</option>
-                        {Object.entries(verificationLabels).map(([v, l]) => (
-                          <option value={v} key={v}>
-                            {l}
-                          </option>
-                        ))}
-                      </Select>
-                      <Input
-                        label="補足"
-                        value={r?.note ?? ""}
-                        onChange={(e) => change(item, { note: e.target.value })}
-                      />
-                    </div>
+                  <div className="section">
+                    <Button
+                      variant="outline"
+                      onClick={() => toggleMemo(item.id)}
+                      aria-expanded={isMemoOpen}
+                      aria-controls={`memo-${item.id}`}
+                    >
+                      {isMemoOpen ? <ChevronUp /> : <Plus />}
+                      {isMemoOpen
+                        ? "メモ入力を閉じる"
+                        : hasMemo
+                          ? "入力済みメモを確認・編集"
+                          : "メモを追加する"}
+                    </Button>
+                    {hasMemo && !isMemoOpen && (
+                      <small className="muted">入力済みのメモがあります</small>
+                    )}
+                    {isMemoOpen && (
+                      <div className="form-grid section" id={`memo-${item.id}`}>
+                        <Textarea
+                          label="観察された事実"
+                          placeholder="例：今週、昼食を持参していない日が3日あった"
+                          value={r?.observedFact ?? ""}
+                          onChange={(e) =>
+                            change(item, { observedFact: e.target.value })
+                          }
+                        />
+                        <div className="grid">
+                          <Select
+                            label="情報源"
+                            value={r?.informationSource ?? ""}
+                            onChange={(e) =>
+                              change(item, {
+                                informationSource: e.target
+                                  .value as ScreeningResponse["informationSource"],
+                              })
+                            }
+                          >
+                            <option value="">選択してください</option>
+                            {Object.entries(sourceLabels).map(([v, l]) => (
+                              <option value={v} key={v}>
+                                {l}
+                              </option>
+                            ))}
+                          </Select>
+                          <Select
+                            label="確認状態"
+                            value={r?.verificationStatus ?? ""}
+                            onChange={(e) =>
+                              change(item, {
+                                verificationStatus: e.target
+                                  .value as ScreeningResponse["verificationStatus"],
+                              })
+                            }
+                          >
+                            <option value="">選択してください</option>
+                            {Object.entries(verificationLabels).map(
+                              ([v, l]) => (
+                                <option value={v} key={v}>
+                                  {l}
+                                </option>
+                              ),
+                            )}
+                          </Select>
+                          <Input
+                            label="補足"
+                            value={r?.note ?? ""}
+                            onChange={(e) =>
+                              change(item, { note: e.target.value })
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Card>
               );
