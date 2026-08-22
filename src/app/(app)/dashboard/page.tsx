@@ -211,7 +211,14 @@ export default async function Page() {
             {recentScreenings.slice(0, 3).map(screeningRow)}
             {recentScreenings.length > 3 && (
               <details className="dashboard-evaluation-details">
-                <summary className="button button-outline">詳細を見る</summary>
+                <summary className="button button-outline">
+                  <span className="dashboard-evaluation-open-label">
+                    詳細を見る
+                  </span>
+                  <span className="dashboard-evaluation-close-label">
+                    閉じる
+                  </span>
+                </summary>
                 {recentScreenings.slice(3).map(screeningRow)}
               </details>
             )}

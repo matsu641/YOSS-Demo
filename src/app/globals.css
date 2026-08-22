@@ -1255,8 +1255,25 @@ tbody tr:hover {
 .dashboard-evaluation-details > summary::-webkit-details-marker {
   display: none;
 }
+.dashboard-evaluation-close-label {
+  display: none;
+}
+.dashboard-evaluation-details[open] {
+  display: flex;
+  flex-direction: column;
+}
 .dashboard-evaluation-details[open] > summary {
-  margin-bottom: 4px;
+  order: 2;
+  margin-top: 16px;
+}
+.dashboard-evaluation-details[open] > .dashboard-evaluation-row {
+  order: 1;
+}
+.dashboard-evaluation-details[open] .dashboard-evaluation-open-label {
+  display: none;
+}
+.dashboard-evaluation-details[open] .dashboard-evaluation-close-label {
+  display: inline;
 }
 .dashboard-bottom-grid {
   display: grid;
