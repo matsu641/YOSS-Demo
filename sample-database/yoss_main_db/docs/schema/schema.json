@@ -1,0 +1,3689 @@
+{
+  "name": "yoss_tr_test",
+  "tables": [
+    {
+      "name": "public.users_school",
+      "type": "BASE TABLE",
+      "comment": "ユーザ所属学校テーブル",
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('\"$$users_school_user_id_seq\"'::regclass)",
+          "comment": "ユーザID"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "users_school_pkc",
+          "def": "CREATE UNIQUE INDEX users_school_pkc ON public.users_school USING btree (user_id, school_code)",
+          "table": "public.users_school",
+          "columns": [
+            "user_id",
+            "school_code"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "users_school_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (user_id, school_code)",
+          "table": "public.users_school",
+          "referenced_table": "",
+          "columns": [
+            "user_id",
+            "school_code"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.active_semester_setting",
+      "type": "BASE TABLE",
+      "comment": "期別設定中テーブル",
+      "columns": [
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "setting_start_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "comment": "期別設定開始日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "active_semester_setting_pkey",
+          "def": "CREATE UNIQUE INDEX active_semester_setting_pkey ON public.active_semester_setting USING btree (school_code)",
+          "table": "public.active_semester_setting",
+          "columns": [
+            "school_code"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "active_semester_setting_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (school_code)",
+          "table": "public.active_semester_setting",
+          "referenced_table": "",
+          "columns": [
+            "school_code"
+          ]
+        },
+        {
+          "name": "active_semester_setting_fk1",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (school_code) REFERENCES school(school_code)",
+          "table": "public.active_semester_setting",
+          "referenced_table": "public.school",
+          "columns": [
+            "school_code"
+          ],
+          "referenced_columns": [
+            "school_code"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.class",
+      "type": "BASE TABLE",
+      "comment": "学級テーブル",
+      "columns": [
+        {
+          "name": "class_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('class_class_id_seq'::regclass)",
+          "comment": "クラスID"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "year",
+          "type": "smallint",
+          "nullable": false,
+          "comment": "年度"
+        },
+        {
+          "name": "grade",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学年"
+        },
+        {
+          "name": "class_name",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "クラス名"
+        },
+        {
+          "name": "number",
+          "type": "smallint",
+          "nullable": false,
+          "comment": "出席番号"
+        },
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "児童生徒ID"
+        },
+        {
+          "name": "next_grade",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "次学年"
+        },
+        {
+          "name": "next_class",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "次クラス"
+        },
+        {
+          "name": "next_number",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "次出席番号"
+        },
+        {
+          "name": "school_continuance_code",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "進学先学校コード"
+        },
+        {
+          "name": "transfer_school_code",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "転校先学校コード"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "pupil_type",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "児童生徒種別"
+        },
+        {
+          "name": "pupil_accept_flag",
+          "type": "boolean",
+          "nullable": true,
+          "comment": "児童生徒受入済フラグ"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "class_pkc",
+          "def": "CREATE UNIQUE INDEX class_pkc ON public.class USING btree (class_id)",
+          "table": "public.class",
+          "columns": [
+            "class_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "class_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (class_id)",
+          "table": "public.class",
+          "referenced_table": "",
+          "columns": [
+            "class_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.class_daito",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "class_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('class_daito_class_id_seq'::regclass)"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        {
+          "name": "year",
+          "type": "smallint",
+          "nullable": false
+        },
+        {
+          "name": "grade",
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        {
+          "name": "class_name",
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        {
+          "name": "number",
+          "type": "smallint",
+          "nullable": false
+        },
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "next_grade",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "next_class",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "next_number",
+          "type": "smallint",
+          "nullable": true
+        },
+        {
+          "name": "school_continuance_code",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "transfer_school_code",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true
+        },
+        {
+          "name": "pupil_type",
+          "type": "smallint",
+          "nullable": true
+        },
+        {
+          "name": "pupil_accept_flag",
+          "type": "boolean",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "class_daito_pkey",
+          "def": "CREATE UNIQUE INDEX class_daito_pkey ON public.class_daito USING btree (class_id)",
+          "table": "public.class_daito",
+          "columns": [
+            "class_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "class_daito_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (class_id)",
+          "table": "public.class_daito",
+          "referenced_table": "",
+          "columns": [
+            "class_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.contract",
+      "type": "BASE TABLE",
+      "comment": "契約テーブル",
+      "columns": [
+        {
+          "name": "contract_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('contract_contract_id_seq'::regclass)",
+          "comment": "契約ID"
+        },
+        {
+          "name": "prefectures",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "都道府県名"
+        },
+        {
+          "name": "municipality",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "自治体名"
+        },
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "テナントID"
+        },
+        {
+          "name": "contractor_name",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "契約者名"
+        },
+        {
+          "name": "contractor_name_kana",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "契約者名かな"
+        },
+        {
+          "name": "start_date",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "comment": "利用開始日"
+        },
+        {
+          "name": "end_date",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "comment": "利用終了日"
+        },
+        {
+          "name": "contract_manager",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "契約担当者"
+        },
+        {
+          "name": "mail_address",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "契約担当者メールアドレス"
+        },
+        {
+          "name": "contact_method",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "契約担当者連絡方法"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "contract_pkc",
+          "def": "CREATE UNIQUE INDEX contract_pkc ON public.contract USING btree (contract_id)",
+          "table": "public.contract",
+          "columns": [
+            "contract_id"
+          ]
+        },
+        {
+          "name": "contract_ix1",
+          "def": "CREATE UNIQUE INDEX contract_ix1 ON public.contract USING btree (tenant_id)",
+          "table": "public.contract",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "contract_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (contract_id)",
+          "table": "public.contract",
+          "referenced_table": "",
+          "columns": [
+            "contract_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.export_file",
+      "type": "BASE TABLE",
+      "comment": "エクスポートファイル",
+      "columns": [
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "テナントID"
+        },
+        {
+          "name": "file_kbn",
+          "type": "varchar(1)",
+          "nullable": false,
+          "comment": "ファイル区分:1:スクリーニングCSV"
+        },
+        {
+          "name": "status_code",
+          "type": "integer",
+          "nullable": false,
+          "comment": "状態コード:0=未作成、1=実行指示、2=作成中、3=作成済み、10=作成エラー"
+        },
+        {
+          "name": "file_path",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "ファイルパス"
+        },
+        {
+          "name": "create_file_datetime",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "ファイル作成日時"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザーID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "export_file_pkc",
+          "def": "CREATE UNIQUE INDEX export_file_pkc ON public.export_file USING btree (tenant_id, file_kbn)",
+          "table": "public.export_file",
+          "columns": [
+            "tenant_id",
+            "file_kbn"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "export_file_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (tenant_id, file_kbn)",
+          "table": "public.export_file",
+          "referenced_table": "",
+          "columns": [
+            "tenant_id",
+            "file_kbn"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.information",
+      "type": "BASE TABLE",
+      "comment": "お知らせテーブル",
+      "columns": [
+        {
+          "name": "information_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('information_information_id_seq'::regclass)",
+          "comment": "お知らせID"
+        },
+        {
+          "name": "information",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "お知らせ内容"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "information_type",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "お知らせ種別"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "学校コード"
+        },
+        {
+          "name": "registered_date",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "comment": "登録日付"
+        },
+        {
+          "name": "title",
+          "type": "varchar(128)",
+          "nullable": true
+        },
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        {
+          "name": "display_start_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true
+        },
+        {
+          "name": "display_end_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true
+        },
+        {
+          "name": "is_forced",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "information_pkc",
+          "def": "CREATE UNIQUE INDEX information_pkc ON public.information USING btree (information_id)",
+          "table": "public.information",
+          "columns": [
+            "information_id"
+          ]
+        },
+        {
+          "name": "information_type_idx",
+          "def": "CREATE INDEX information_type_idx ON public.information USING btree (information_type)",
+          "table": "public.information",
+          "columns": [
+            "information_type"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "information_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (information_id)",
+          "table": "public.information",
+          "referenced_table": "",
+          "columns": [
+            "information_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.information_read",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "information_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "read_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "information_read_pkey",
+          "def": "CREATE UNIQUE INDEX information_read_pkey ON public.information_read USING btree (information_id, user_id)",
+          "table": "public.information_read",
+          "columns": [
+            "information_id",
+            "user_id"
+          ]
+        },
+        {
+          "name": "information_read_user_idx",
+          "def": "CREATE INDEX information_read_user_idx ON public.information_read USING btree (user_id)",
+          "table": "public.information_read",
+          "columns": [
+            "user_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "information_read_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (information_id, user_id)",
+          "table": "public.information_read",
+          "referenced_table": "",
+          "columns": [
+            "information_id",
+            "user_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.m_facility_group",
+      "type": "BASE TABLE",
+      "comment": "施設区分マスタ",
+      "columns": [
+        {
+          "name": "facility_group_code",
+          "type": "integer",
+          "nullable": false,
+          "comment": "施設区分コード"
+        },
+        {
+          "name": "facility_group",
+          "type": "varchar(16)",
+          "nullable": false,
+          "comment": "施設区分"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "登録日時"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザーID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザーID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "m_facility_group_pkc",
+          "def": "CREATE UNIQUE INDEX m_facility_group_pkc ON public.m_facility_group USING btree (facility_group_code)",
+          "table": "public.m_facility_group",
+          "columns": [
+            "facility_group_code"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "m_facility_group_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (facility_group_code)",
+          "table": "public.m_facility_group",
+          "referenced_table": "",
+          "columns": [
+            "facility_group_code"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.m_region_resource",
+      "type": "BASE TABLE",
+      "comment": "地域資源マスタ",
+      "columns": [
+        {
+          "name": "region_resource_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('m_region_resource_region_resource_id_seq'::regclass)",
+          "comment": "施設コード"
+        },
+        {
+          "name": "end_flag",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "終了フラグ:地域資源のサービス終了する場合、このフラグをＯＮにする。"
+        },
+        {
+          "name": "pause_flag",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "利用停止フラグ:運用者の都合により、一時的にこの地域資源が利用出来ない事を示す。"
+        },
+        {
+          "name": "region_resource_name",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "施設名:施設の名称"
+        },
+        {
+          "name": "facility_group_code",
+          "type": "integer",
+          "nullable": true,
+          "comment": "施設区分コード:塾、食堂、スポーツクラブ、保育施設など。"
+        },
+        {
+          "name": "facility_explanation",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "施設の説明:どのような施設かの説明"
+        },
+        {
+          "name": "facility_tel1",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "電話番号１:固定電話、携帯電話など　２つまで登録"
+        },
+        {
+          "name": "facility_tel2",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "電話番号２"
+        },
+        {
+          "name": "facility_post_code",
+          "type": "varchar(10)",
+          "nullable": true,
+          "comment": "郵便番号:郵便番号"
+        },
+        {
+          "name": "facility_address",
+          "type": "varchar(128)",
+          "nullable": false,
+          "comment": "住所:施設の住所　都道府県、市町村などを設定"
+        },
+        {
+          "name": "facility_email",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "E-mail:メールアドレス"
+        },
+        {
+          "name": "facility_url",
+          "type": "varchar(128)",
+          "nullable": true,
+          "comment": "ホームページ:施設のホームページURL"
+        },
+        {
+          "name": "facility_capacity",
+          "type": "integer",
+          "nullable": true,
+          "comment": "定員:施設の収容人数"
+        },
+        {
+          "name": "facility_price",
+          "type": "integer",
+          "nullable": true,
+          "comment": "料金:有料／無料　参考価格を入力"
+        },
+        {
+          "name": "facility_starttime",
+          "type": "time without time zone",
+          "nullable": true,
+          "comment": "営業時間（開始）:開始時刻"
+        },
+        {
+          "name": "facility_endtime",
+          "type": "time without time zone",
+          "nullable": true,
+          "comment": "営業時間（終了）:終了時刻"
+        },
+        {
+          "name": "facility_close",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "定休日:自由記述で記載（不定期、土日祝、月水、無休など）"
+        },
+        {
+          "name": "facility_remark",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "施設の説明:どのような施設かの説明"
+        },
+        {
+          "name": "infrant",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "利用対象者（幼児）:利用対象者（幼児）"
+        },
+        {
+          "name": "student",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "利用対象者（小学校）:利用対象者（小学校）"
+        },
+        {
+          "name": "jstudent",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "利用対象者（中学校）:利用対象者（中学校）"
+        },
+        {
+          "name": "hstudent",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "利用対象者（高校）:利用対象者（高校）"
+        },
+        {
+          "name": "anyone",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "利用対象者（フリー）:利用対象者（フリー）"
+        },
+        {
+          "name": "parents",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "保護者利用:保護者も利用可能かのフラグ"
+        },
+        {
+          "name": "support_a1",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_1:①担任"
+        },
+        {
+          "name": "support_a2",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_2:②生徒指導や支援"
+        },
+        {
+          "name": "support_a3",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_3:③養護教諭"
+        },
+        {
+          "name": "support_a4",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_4:④特別支援担当"
+        },
+        {
+          "name": "support_a5",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_5:⑤学年団"
+        },
+        {
+          "name": "support_a6",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_6:⑥SSWを活用"
+        },
+        {
+          "name": "support_a7",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_7:⑦SCを活用"
+        },
+        {
+          "name": "support_a8",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクA_8:⑧その他"
+        },
+        {
+          "name": "support_b1",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_1:①家庭養育支援"
+        },
+        {
+          "name": "support_b2",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_2:②学習支援"
+        },
+        {
+          "name": "support_b3",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_3:③居場所・子ども食堂等"
+        },
+        {
+          "name": "support_b4",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_4:④単発の事業"
+        },
+        {
+          "name": "support_b5",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_5:⑤地域人材"
+        },
+        {
+          "name": "support_b6",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_6:⑥学童保育"
+        },
+        {
+          "name": "support_b7",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_7:⑦地域の福祉サービス"
+        },
+        {
+          "name": "support_b8",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクB_8:⑧その他"
+        },
+        {
+          "name": "support_c1",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクC_1:①家庭児童相談・児相"
+        },
+        {
+          "name": "support_c2",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクC_2:②少年サポートセンター"
+        },
+        {
+          "name": "support_c3",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクC_3:③教育センター"
+        },
+        {
+          "name": "support_c4",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクC_4:④福祉制度"
+        },
+        {
+          "name": "support_c5",
+          "type": "varchar(1)",
+          "nullable": true,
+          "comment": "運用支援ランクC_5:⑤その他"
+        },
+        {
+          "name": "organization_name",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "運営会社:施設を管理する運営会社又は団体"
+        },
+        {
+          "name": "organization_representative",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "運営会社　氏名:代表者氏名"
+        },
+        {
+          "name": "organization_tel1",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "運営会社　電話１:電話番号　２つまで登録"
+        },
+        {
+          "name": "organization_tel2",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "運営会社　電話２:電話番号　２つまで登録"
+        },
+        {
+          "name": "organization_post_code",
+          "type": "varchar(10)",
+          "nullable": true,
+          "comment": "運営会社　郵便番号:郵便番号"
+        },
+        {
+          "name": "organization_address",
+          "type": "varchar(128)",
+          "nullable": true,
+          "comment": "運営会社　住所:運営会社の住所"
+        },
+        {
+          "name": "organization_email",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "運営会社　E-mail:メールアドレス"
+        },
+        {
+          "name": "organization_url",
+          "type": "varchar(128)",
+          "nullable": true,
+          "comment": "運営会社　URL:ホームページなど"
+        },
+        {
+          "name": "organization_remark",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "運営会社　備考欄:コメント。自由記述"
+        },
+        {
+          "name": "prefectures",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "提供都道府県名:地域情報登録時に、登録したテナントに紐づく地域（都道府県）を設定"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "登録日時"
+        },
+        {
+          "name": "registered_tenant_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "登録テナント:登録テナントID"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録者ID:この地域情報を新規登録した利用者ID"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "updated_tenant_id",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "更新テナント:更新テナントID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新者ID:この地域情報を最後に更新した利用者ID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "m_region_resource_pkc",
+          "def": "CREATE UNIQUE INDEX m_region_resource_pkc ON public.m_region_resource USING btree (region_resource_id)",
+          "table": "public.m_region_resource",
+          "columns": [
+            "region_resource_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "m_region_resource_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (region_resource_id)",
+          "table": "public.m_region_resource",
+          "referenced_table": "",
+          "columns": [
+            "region_resource_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.municipality",
+      "type": "BASE TABLE",
+      "comment": "自治体マスタテーブル",
+      "columns": [
+        {
+          "name": "municipality_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('municipality_municipality_id_seq'::regclass)",
+          "comment": "自治体ID"
+        },
+        {
+          "name": "prefectures",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "都道府県名"
+        },
+        {
+          "name": "municipality",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "自治体名"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "municipality_pkc",
+          "def": "CREATE UNIQUE INDEX municipality_pkc ON public.municipality USING btree (municipality_id)",
+          "table": "public.municipality",
+          "columns": [
+            "municipality_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "municipality_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (municipality_id)",
+          "table": "public.municipality",
+          "referenced_table": "",
+          "columns": [
+            "municipality_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.password_reset_requests",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "request_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('password_reset_requests_request_id_seq'::regclass)"
+        },
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        {
+          "name": "request_status",
+          "type": "smallint",
+          "nullable": false,
+          "default": "0"
+        },
+        {
+          "name": "requested_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "processed_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true
+        },
+        {
+          "name": "processed_by_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "password_reset_requests_pkey",
+          "def": "CREATE UNIQUE INDEX password_reset_requests_pkey ON public.password_reset_requests USING btree (request_id)",
+          "table": "public.password_reset_requests",
+          "columns": [
+            "request_id"
+          ]
+        },
+        {
+          "name": "idx_password_reset_requests_tenant_status",
+          "def": "CREATE INDEX idx_password_reset_requests_tenant_status ON public.password_reset_requests USING btree (tenant_id, request_status)",
+          "table": "public.password_reset_requests",
+          "columns": [
+            "tenant_id",
+            "request_status"
+          ]
+        },
+        {
+          "name": "idx_password_reset_requests_user_id",
+          "def": "CREATE INDEX idx_password_reset_requests_user_id ON public.password_reset_requests USING btree (user_id)",
+          "table": "public.password_reset_requests",
+          "columns": [
+            "user_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "password_reset_requests_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (request_id)",
+          "table": "public.password_reset_requests",
+          "referenced_table": "",
+          "columns": [
+            "request_id"
+          ]
+        },
+        {
+          "name": "password_reset_requests_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(user_id)",
+          "table": "public.password_reset_requests",
+          "referenced_table": "public.users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "user_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.personal_info_access_tokens",
+      "type": "BASE TABLE",
+      "comment": "個人情報保管アクセストークンテーブル",
+      "columns": [
+        {
+          "name": "personal_info_login_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "個人情報保管ログインユーザID"
+        },
+        {
+          "name": "unique_id",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "ユニークID:個人情報保管SのAPIユーザに割り当てられるユニークID"
+        },
+        {
+          "name": "access_token",
+          "type": "varchar(200)",
+          "nullable": false,
+          "comment": "アクセストークン:個人情報保管Sの認証APIから取得するアクセストークン"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "comment": "登録日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "personal_info_access_tokens_pkey",
+          "def": "CREATE UNIQUE INDEX personal_info_access_tokens_pkey ON public.personal_info_access_tokens USING btree (personal_info_login_user_id)",
+          "table": "public.personal_info_access_tokens",
+          "columns": [
+            "personal_info_login_user_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "personal_info_access_tokens_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (personal_info_login_user_id)",
+          "table": "public.personal_info_access_tokens",
+          "referenced_table": "",
+          "columns": [
+            "personal_info_login_user_id"
+          ]
+        },
+        {
+          "name": "personal_info_access_tokens_personal_info_login_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (personal_info_login_user_id) REFERENCES personal_info_login_users(id)",
+          "table": "public.personal_info_access_tokens",
+          "referenced_table": "public.personal_info_login_users",
+          "columns": [
+            "personal_info_login_user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.personal_info_login_users",
+      "type": "BASE TABLE",
+      "comment": "個人情報保管ログインユーザテーブル",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('personal_info_login_users_id_seq'::regclass)",
+          "comment": "個人情報保管ログインユーザID"
+        },
+        {
+          "name": "fapp_id",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "フロントアプリID:個人情報保管Sで事前に作成したフロントアプリID"
+        },
+        {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "nullable": false,
+          "comment": "ログインID:個人情報保管SのAPIユーザがログインする際に使用するID(メールアドレス)"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "comment": "登録日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "personal_info_login_users_fapp_id_user_id_key",
+          "def": "CREATE UNIQUE INDEX personal_info_login_users_fapp_id_user_id_key ON public.personal_info_login_users USING btree (fapp_id, user_id)",
+          "table": "public.personal_info_login_users",
+          "columns": [
+            "fapp_id",
+            "user_id"
+          ]
+        },
+        {
+          "name": "personal_info_login_users_pkey",
+          "def": "CREATE UNIQUE INDEX personal_info_login_users_pkey ON public.personal_info_login_users USING btree (id)",
+          "table": "public.personal_info_login_users",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "personal_info_login_users_fapp_id_user_id_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (fapp_id, user_id)",
+          "table": "public.personal_info_login_users",
+          "referenced_table": "",
+          "columns": [
+            "fapp_id",
+            "user_id"
+          ]
+        },
+        {
+          "name": "personal_info_login_users_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.personal_info_login_users",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.proceedings",
+      "type": "BASE TABLE",
+      "comment": "児童別議事録",
+      "columns": [
+        {
+          "name": "proceedings_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('proceedings_proceedings_id_seq'::regclass)",
+          "comment": "議事録ID"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "児童生徒ID"
+        },
+        {
+          "name": "semester_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "期別ID"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "登録日時"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "proceedings_pkc",
+          "def": "CREATE UNIQUE INDEX proceedings_pkc ON public.proceedings USING btree (proceedings_id)",
+          "table": "public.proceedings",
+          "columns": [
+            "proceedings_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "proceedings_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (proceedings_id)",
+          "table": "public.proceedings",
+          "referenced_table": "",
+          "columns": [
+            "proceedings_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.proceedings_actions",
+      "type": "BASE TABLE",
+      "comment": "議事録アクション",
+      "columns": [
+        {
+          "name": "proceedings_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "議事録ID"
+        },
+        {
+          "name": "action_name1",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名1"
+        },
+        {
+          "name": "action1",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション1"
+        },
+        {
+          "name": "action_name2",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名2"
+        },
+        {
+          "name": "action2",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション2"
+        },
+        {
+          "name": "action_name3",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名3"
+        },
+        {
+          "name": "action3",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション3"
+        },
+        {
+          "name": "action_name4",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名4"
+        },
+        {
+          "name": "action4",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション4"
+        },
+        {
+          "name": "action_name5",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名5"
+        },
+        {
+          "name": "action5",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション5"
+        },
+        {
+          "name": "action_name6",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名6"
+        },
+        {
+          "name": "action6",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション6"
+        },
+        {
+          "name": "action_name7",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名7"
+        },
+        {
+          "name": "action7",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション7"
+        },
+        {
+          "name": "action_name8",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名8"
+        },
+        {
+          "name": "action8",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション8"
+        },
+        {
+          "name": "action_name9",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名9"
+        },
+        {
+          "name": "action9",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション9"
+        },
+        {
+          "name": "action_name10",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "アクション名10"
+        },
+        {
+          "name": "action10",
+          "type": "integer",
+          "nullable": true,
+          "comment": "アクション10"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "登録日時"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "proceedings_actions_pkc",
+          "def": "CREATE UNIQUE INDEX proceedings_actions_pkc ON public.proceedings_actions USING btree (proceedings_id)",
+          "table": "public.proceedings_actions",
+          "columns": [
+            "proceedings_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "proceedings_actions_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (proceedings_id)",
+          "table": "public.proceedings_actions",
+          "referenced_table": "",
+          "columns": [
+            "proceedings_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.proceedings_region_resource",
+      "type": "BASE TABLE",
+      "comment": "議事録地域資源",
+      "columns": [
+        {
+          "name": "proceedings_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "議事録ID"
+        },
+        {
+          "name": "region_resource_id1",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID1"
+        },
+        {
+          "name": "region_resource_id2",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID2"
+        },
+        {
+          "name": "region_resource_id3",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID3"
+        },
+        {
+          "name": "region_resource_id4",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID4"
+        },
+        {
+          "name": "region_resource_id5",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID5"
+        },
+        {
+          "name": "region_resource_id6",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID6"
+        },
+        {
+          "name": "region_resource_id7",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID7"
+        },
+        {
+          "name": "region_resource_id8",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID8"
+        },
+        {
+          "name": "region_resource_id9",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID9"
+        },
+        {
+          "name": "region_resource_id10",
+          "type": "integer",
+          "nullable": true,
+          "comment": "地域資源ID10"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "登録日時"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) with time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "proceedings_region_resource_pkc",
+          "def": "CREATE UNIQUE INDEX proceedings_region_resource_pkc ON public.proceedings_region_resource USING btree (proceedings_id)",
+          "table": "public.proceedings_region_resource",
+          "columns": [
+            "proceedings_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "proceedings_region_resource_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (proceedings_id)",
+          "table": "public.proceedings_region_resource",
+          "referenced_table": "",
+          "columns": [
+            "proceedings_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.pupil",
+      "type": "BASE TABLE",
+      "comment": "児童生徒テーブル",
+      "columns": [
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('pupil_pupil_id_seq'::regclass)",
+          "comment": "児童生徒ID"
+        },
+        {
+          "name": "personal_information_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "個人情報ID"
+        },
+        {
+          "name": "is_deleted",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false",
+          "comment": "論理削除フラグ"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "identification",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "識別情報"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "pupil_pkc",
+          "def": "CREATE UNIQUE INDEX pupil_pkc ON public.pupil USING btree (pupil_id)",
+          "table": "public.pupil",
+          "columns": [
+            "pupil_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "pupil_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (pupil_id)",
+          "table": "public.pupil",
+          "referenced_table": "",
+          "columns": [
+            "pupil_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.pupil_response_flag",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "pupil_response_flag_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('pupil_response_flag_pupil_response_flag_id_seq'::regclass)"
+        },
+        {
+          "name": "class_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "flag_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "pupil_response_flag_pkey",
+          "def": "CREATE UNIQUE INDEX pupil_response_flag_pkey ON public.pupil_response_flag USING btree (pupil_response_flag_id)",
+          "table": "public.pupil_response_flag",
+          "columns": [
+            "pupil_response_flag_id"
+          ]
+        },
+        {
+          "name": "pupil_response_flag_uq",
+          "def": "CREATE UNIQUE INDEX pupil_response_flag_uq ON public.pupil_response_flag USING btree (class_id, flag_id)",
+          "table": "public.pupil_response_flag",
+          "columns": [
+            "class_id",
+            "flag_id"
+          ]
+        },
+        {
+          "name": "pupil_response_flag_ix1",
+          "def": "CREATE INDEX pupil_response_flag_ix1 ON public.pupil_response_flag USING btree (class_id)",
+          "table": "public.pupil_response_flag",
+          "columns": [
+            "class_id"
+          ]
+        },
+        {
+          "name": "pupil_response_flag_ix2",
+          "def": "CREATE INDEX pupil_response_flag_ix2 ON public.pupil_response_flag USING btree (flag_id)",
+          "table": "public.pupil_response_flag",
+          "columns": [
+            "flag_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "pupil_response_flag_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (pupil_response_flag_id)",
+          "table": "public.pupil_response_flag",
+          "referenced_table": "",
+          "columns": [
+            "pupil_response_flag_id"
+          ]
+        },
+        {
+          "name": "pupil_response_flag_uq",
+          "type": "UNIQUE",
+          "def": "UNIQUE (class_id, flag_id)",
+          "table": "public.pupil_response_flag",
+          "referenced_table": "",
+          "columns": [
+            "class_id",
+            "flag_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.region_resource_tenant_coinfig",
+      "type": "BASE TABLE",
+      "comment": "地域資源_テナント設定",
+      "columns": [
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "テナントID:YOSSで管理しているテナントID"
+        },
+        {
+          "name": "scope",
+          "type": "varchar(1)",
+          "nullable": false,
+          "comment": "対象範囲:0:同一テナント、1:同一地域"
+        },
+        {
+          "name": "usage_flag",
+          "type": "boolean",
+          "nullable": false,
+          "comment": "地域資源使用フラグ:false:無効、true:有効"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "登録日時"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザーID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザーID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "region_resource_tenant_coinfig_pkc",
+          "def": "CREATE UNIQUE INDEX region_resource_tenant_coinfig_pkc ON public.region_resource_tenant_coinfig USING btree (tenant_id)",
+          "table": "public.region_resource_tenant_coinfig",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "region_resource_tenant_coinfig_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (tenant_id)",
+          "table": "public.region_resource_tenant_coinfig",
+          "referenced_table": "",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.school",
+      "type": "BASE TABLE",
+      "comment": "学校テーブル",
+      "columns": [
+        {
+          "name": "school_name",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "学校名"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "prefectures",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "都道府県"
+        },
+        {
+          "name": "municipalities",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "市区町村"
+        },
+        {
+          "name": "classification",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校区分"
+        },
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "テナントID"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "school_pkc",
+          "def": "CREATE UNIQUE INDEX school_pkc ON public.school USING btree (school_code)",
+          "table": "public.school",
+          "columns": [
+            "school_code"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "school_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (school_code)",
+          "table": "public.school",
+          "referenced_table": "",
+          "columns": [
+            "school_code"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.school_response_flag",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "flag_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('school_response_flag_flag_id_seq'::regclass)"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        {
+          "name": "sort_order",
+          "type": "smallint",
+          "nullable": false
+        },
+        {
+          "name": "flag_name",
+          "type": "varchar(32)",
+          "nullable": false
+        },
+        {
+          "name": "flag_label",
+          "type": "varchar(256)",
+          "nullable": true
+        },
+        {
+          "name": "flag_color",
+          "type": "varchar(16)",
+          "nullable": false,
+          "default": "'blue'::character varying"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "default": "true"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "school_response_flag_pkey",
+          "def": "CREATE UNIQUE INDEX school_response_flag_pkey ON public.school_response_flag USING btree (flag_id)",
+          "table": "public.school_response_flag",
+          "columns": [
+            "flag_id"
+          ]
+        },
+        {
+          "name": "school_response_flag_uq",
+          "def": "CREATE UNIQUE INDEX school_response_flag_uq ON public.school_response_flag USING btree (school_code, sort_order)",
+          "table": "public.school_response_flag",
+          "columns": [
+            "school_code",
+            "sort_order"
+          ]
+        },
+        {
+          "name": "school_response_flag_ix1",
+          "def": "CREATE INDEX school_response_flag_ix1 ON public.school_response_flag USING btree (school_code)",
+          "table": "public.school_response_flag",
+          "columns": [
+            "school_code"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "school_response_flag_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (flag_id)",
+          "table": "public.school_response_flag",
+          "referenced_table": "",
+          "columns": [
+            "flag_id"
+          ]
+        },
+        {
+          "name": "school_response_flag_uq",
+          "type": "UNIQUE",
+          "def": "UNIQUE (school_code, sort_order)",
+          "table": "public.school_response_flag",
+          "referenced_table": "",
+          "columns": [
+            "school_code",
+            "sort_order"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.school_setting",
+      "type": "BASE TABLE",
+      "comment": "学校設定テーブル",
+      "columns": [
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "item_name_1",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名1"
+        },
+        {
+          "name": "comment_1",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント1"
+        },
+        {
+          "name": "item_name_2",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名2"
+        },
+        {
+          "name": "comment_2",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント2"
+        },
+        {
+          "name": "item_name_3",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名3"
+        },
+        {
+          "name": "comment_3",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント3"
+        },
+        {
+          "name": "item_name_4",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名4"
+        },
+        {
+          "name": "comment_4",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント4"
+        },
+        {
+          "name": "item_name_5",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名5"
+        },
+        {
+          "name": "comment_5",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント5"
+        },
+        {
+          "name": "item_name_6",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名6"
+        },
+        {
+          "name": "comment_6",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント6"
+        },
+        {
+          "name": "item_name_7",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名7"
+        },
+        {
+          "name": "comment_7",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント7"
+        },
+        {
+          "name": "item_name_8",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名8"
+        },
+        {
+          "name": "comment_8",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント8"
+        },
+        {
+          "name": "item_name_9",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名9"
+        },
+        {
+          "name": "comment_9",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント9"
+        },
+        {
+          "name": "item_name_10",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名10"
+        },
+        {
+          "name": "comment_10",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント10"
+        },
+        {
+          "name": "item_name_11",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名11"
+        },
+        {
+          "name": "comment_11",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント11"
+        },
+        {
+          "name": "item_name_12",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名12"
+        },
+        {
+          "name": "comment_12",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント12"
+        },
+        {
+          "name": "item_name_13",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名13"
+        },
+        {
+          "name": "comment_13",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント13"
+        },
+        {
+          "name": "item_name_14",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名14"
+        },
+        {
+          "name": "comment_14",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント14"
+        },
+        {
+          "name": "item_name_15",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "項目名15"
+        },
+        {
+          "name": "comment_15",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "コメント15"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "last_grade",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "最終学年"
+        },
+        {
+          "name": "grade_1",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'小学1年'::character varying",
+          "comment": "学年1"
+        },
+        {
+          "name": "grade_2",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'小学2年'::character varying",
+          "comment": "学年2"
+        },
+        {
+          "name": "grade_3",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'小学3年'::character varying",
+          "comment": "学年3"
+        },
+        {
+          "name": "grade_4",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'小学4年'::character varying",
+          "comment": "学年4"
+        },
+        {
+          "name": "grade_5",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'小学5年'::character varying",
+          "comment": "学年5"
+        },
+        {
+          "name": "grade_6",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'小学6年'::character varying",
+          "comment": "学年6"
+        },
+        {
+          "name": "grade_7",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'中学1年'::character varying",
+          "comment": "学年7"
+        },
+        {
+          "name": "grade_8",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'中学2年'::character varying",
+          "comment": "学年8"
+        },
+        {
+          "name": "grade_9",
+          "type": "varchar(64)",
+          "nullable": true,
+          "default": "'中学3年'::character varying",
+          "comment": "学年9"
+        },
+        {
+          "name": "grade_10",
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        {
+          "name": "grade_11",
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        {
+          "name": "grade_12",
+          "type": "varchar(64)",
+          "nullable": true
+        },
+        {
+          "name": "resource_map_embed_url",
+          "type": "varchar(512)",
+          "nullable": true,
+          "comment": "地域資源マップ埋め込みURL（Google Maps embed用）"
+        },
+        {
+          "name": "resource_map_edit_url",
+          "type": "varchar(512)",
+          "nullable": true,
+          "comment": "地域資源マップ編集URL（Google Maps edit用）"
+        }
+      ]
+    },
+    {
+      "name": "public.semester",
+      "type": "BASE TABLE",
+      "comment": "期別テーブル",
+      "columns": [
+        {
+          "name": "semester_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('semester_semester_id_seq'::regclass)",
+          "comment": "期別ID"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": false,
+          "comment": "学校コード"
+        },
+        {
+          "name": "year",
+          "type": "smallint",
+          "nullable": false,
+          "comment": "年度"
+        },
+        {
+          "name": "semester",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "学期"
+        },
+        {
+          "name": "reference_date",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "comment": "基準日"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "semester_new_pkc",
+          "def": "CREATE UNIQUE INDEX semester_new_pkc ON public.semester USING btree (semester_id)",
+          "table": "public.semester",
+          "columns": [
+            "semester_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "semester_new_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (semester_id)",
+          "table": "public.semester",
+          "referenced_table": "",
+          "columns": [
+            "semester_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.session",
+      "type": "BASE TABLE",
+      "comment": "セッションテーブル",
+      "columns": [
+        {
+          "name": "session_id",
+          "type": "smallint",
+          "nullable": false,
+          "comment": "セッションID"
+        },
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "ユーザID"
+        },
+        {
+          "name": "update_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        }
+      ]
+    },
+    {
+      "name": "public.tenant",
+      "type": "BASE TABLE",
+      "comment": "テナントテーブル",
+      "columns": [
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "テナントID"
+        },
+        {
+          "name": "lock_count",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "ロック回数"
+        },
+        {
+          "name": "lock_release_time",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "ロック解除時間"
+        },
+        {
+          "name": "password_limit",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "パスワード有効期限"
+        },
+        {
+          "name": "password_policy",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "パスワードポリシー"
+        },
+        {
+          "name": "message",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "エラーメッセージ"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "no_operation_timeout",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "無操作タイムアウト時間"
+        },
+        {
+          "name": "fapp_id",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "フロントアプリID"
+        },
+        {
+          "name": "fapp_userid",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "フロントアプリユーザID"
+        },
+        {
+          "name": "fapp_password",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "フロントアプリパスワード"
+        },
+        {
+          "name": "is_copy_enabled",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "comment": "コピー機能有効化"
+        },
+        {
+          "name": "personal_ip_address",
+          "type": "varchar(200)",
+          "nullable": true,
+          "comment": "個人情報保管IPアドレス"
+        },
+        {
+          "name": "is_legacy_ui_enabled",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "is_otp_enabled",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false"
+        },
+        {
+          "name": "is_deleted",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tenanto_pkc",
+          "def": "CREATE UNIQUE INDEX tenanto_pkc ON public.tenant USING btree (tenant_id)",
+          "table": "public.tenant",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "tenanto_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (tenant_id)",
+          "table": "public.tenant",
+          "referenced_table": "",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.terms",
+      "type": "BASE TABLE",
+      "comment": "利用規約テーブル",
+      "columns": [
+        {
+          "name": "terms_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('terms_terms_id_seq'::regclass)",
+          "comment": "規約ID"
+        },
+        {
+          "name": "terms_content",
+          "type": "varchar(1000)",
+          "nullable": true,
+          "comment": "規約内容"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "terms_pkc",
+          "def": "CREATE UNIQUE INDEX terms_pkc ON public.terms USING btree (terms_id)",
+          "table": "public.terms",
+          "columns": [
+            "terms_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "terms_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (terms_id)",
+          "table": "public.terms",
+          "referenced_table": "",
+          "columns": [
+            "terms_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.user_passkeys",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "nullable": false,
+          "default": "nextval('user_passkeys_id_seq1'::regclass)"
+        },
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false
+        },
+        {
+          "name": "credential_id",
+          "type": "varchar(1024)",
+          "nullable": false
+        },
+        {
+          "name": "public_key",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "device_name",
+          "type": "varchar(255)",
+          "nullable": true,
+          "default": "NULL::character varying"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "user_passkeys_credential_id_key",
+          "def": "CREATE UNIQUE INDEX user_passkeys_credential_id_key ON public.user_passkeys USING btree (credential_id)",
+          "table": "public.user_passkeys",
+          "columns": [
+            "credential_id"
+          ]
+        },
+        {
+          "name": "user_passkeys_pkey",
+          "def": "CREATE UNIQUE INDEX user_passkeys_pkey ON public.user_passkeys USING btree (id)",
+          "table": "public.user_passkeys",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "idx_user_passkeys_credential_id",
+          "def": "CREATE INDEX idx_user_passkeys_credential_id ON public.user_passkeys USING btree (credential_id)",
+          "table": "public.user_passkeys",
+          "columns": [
+            "credential_id"
+          ]
+        },
+        {
+          "name": "idx_user_passkeys_user_tenant",
+          "def": "CREATE INDEX idx_user_passkeys_user_tenant ON public.user_passkeys USING btree (user_id, tenant_id)",
+          "table": "public.user_passkeys",
+          "columns": [
+            "user_id",
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "user_passkeys_credential_id_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (credential_id)",
+          "table": "public.user_passkeys",
+          "referenced_table": "",
+          "columns": [
+            "credential_id"
+          ]
+        },
+        {
+          "name": "user_passkeys_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.user_passkeys",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "fk_user_passkeys_user",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(user_id)",
+          "table": "public.user_passkeys",
+          "referenced_table": "public.users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "user_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.users",
+      "type": "BASE TABLE",
+      "comment": "ユーザテーブル",
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('users_user_id_seq'::regclass)",
+          "comment": "ユーザID"
+        },
+        {
+          "name": "login_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "ログインID"
+        },
+        {
+          "name": "user_name",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "ログインユーザ名"
+        },
+        {
+          "name": "mail",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "メールアドレス"
+        },
+        {
+          "name": "password",
+          "type": "varchar(128)",
+          "nullable": false,
+          "comment": "パスワード"
+        },
+        {
+          "name": "author",
+          "type": "smallint",
+          "nullable": false,
+          "comment": "権限"
+        },
+        {
+          "name": "is_temporary_password",
+          "type": "boolean",
+          "nullable": true,
+          "default": "false",
+          "comment": "仮パスワードフラグ"
+        },
+        {
+          "name": "tenant_id",
+          "type": "varchar(64)",
+          "nullable": false,
+          "comment": "テナントID"
+        },
+        {
+          "name": "retry_count",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "ログイン失敗回数"
+        },
+        {
+          "name": "login_at",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "comment": "ログイン日時"
+        },
+        {
+          "name": "update_password_at",
+          "type": "timestamp without time zone",
+          "nullable": true,
+          "comment": "パスワード更新日付"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "phone_number",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "連絡先"
+        },
+        {
+          "name": "mask_type",
+          "type": "smallint",
+          "nullable": true,
+          "comment": "個人情報マスク種別: 0=マスクなし, 1=常時マスク(解除不可), 2=マスクあり(限定解除可能)"
+        },
+        {
+          "name": "is_deleted",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        },
+        {
+          "name": "deleted_at",
+          "type": "timestamp without time zone",
+          "nullable": true
+        },
+        {
+          "name": "deleted_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "users_pkc",
+          "def": "CREATE UNIQUE INDEX users_pkc ON public.users USING btree (user_id)",
+          "table": "public.users",
+          "columns": [
+            "user_id"
+          ]
+        },
+        {
+          "name": "idx_users_is_deleted",
+          "def": "CREATE INDEX idx_users_is_deleted ON public.users USING btree (is_deleted)",
+          "table": "public.users",
+          "columns": [
+            "is_deleted"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "users_pkc",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (user_id)",
+          "table": "public.users",
+          "referenced_table": "",
+          "columns": [
+            "user_id"
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "table": "public.active_semester_setting",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_one",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (school_code) REFERENCES school(school_code)"
+    },
+    {
+      "table": "public.password_reset_requests",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "user_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(user_id)"
+    },
+    {
+      "table": "public.personal_info_access_tokens",
+      "columns": [
+        "personal_info_login_user_id"
+      ],
+      "cardinality": "zero_or_one",
+      "parent_table": "public.personal_info_login_users",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (personal_info_login_user_id) REFERENCES personal_info_login_users(id)"
+    },
+    {
+      "table": "public.user_passkeys",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "user_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(user_id)"
+    },
+    {
+      "table": "public.users_school",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.class",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.class_daito",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.information",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.proceedings",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.school_response_flag",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.school_setting",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.semester",
+      "columns": [
+        "school_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school",
+      "parent_columns": [
+        "school_code"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.contract",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.export_file",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.information",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.password_reset_requests",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.region_resource_tenant_coinfig",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_one",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.school",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.user_passkeys",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.users",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant",
+      "parent_columns": [
+        "tenant_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.users_school",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "user_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.information_read",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "user_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.session",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "user_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.class",
+      "columns": [
+        "pupil_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.pupil",
+      "parent_columns": [
+        "pupil_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.class_daito",
+      "columns": [
+        "pupil_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.pupil",
+      "parent_columns": [
+        "pupil_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.proceedings",
+      "columns": [
+        "pupil_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.pupil",
+      "parent_columns": [
+        "pupil_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.pupil_response_flag",
+      "columns": [
+        "class_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.class",
+      "parent_columns": [
+        "class_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.proceedings",
+      "columns": [
+        "semester_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.semester",
+      "parent_columns": [
+        "semester_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.m_region_resource",
+      "columns": [
+        "facility_group_code"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.m_facility_group",
+      "parent_columns": [
+        "facility_group_code"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.pupil_response_flag",
+      "columns": [
+        "flag_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.school_response_flag",
+      "parent_columns": [
+        "flag_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.information_read",
+      "columns": [
+        "information_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.information",
+      "parent_columns": [
+        "information_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.proceedings_actions",
+      "columns": [
+        "proceedings_id"
+      ],
+      "cardinality": "zero_or_one",
+      "parent_table": "public.proceedings",
+      "parent_columns": [
+        "proceedings_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    },
+    {
+      "table": "public.proceedings_region_resource",
+      "columns": [
+        "proceedings_id"
+      ],
+      "cardinality": "zero_or_one",
+      "parent_table": "public.proceedings",
+      "parent_columns": [
+        "proceedings_id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "Additional Relation",
+      "virtual": true
+    }
+  ],
+  "driver": {
+    "name": "postgres",
+    "database_version": "PostgreSQL 17.7 on x86_64-windows, compiled by msvc-19.44.35221, 64-bit",
+    "meta": {
+      "current_schema": "public",
+      "search_paths": [
+        "postgres",
+        "public"
+      ],
+      "dict": {
+        "Functions": "Stored procedures and functions"
+      }
+    }
+  }
+}

@@ -1,0 +1,791 @@
+{
+  "name": "personaldb",
+  "tables": [
+    {
+      "name": "public.action_record",
+      "type": "BASE TABLE",
+      "comment": "アクション記録テーブル: 児童生徒に紐づくアクション予定・実行記録。学期・クラスとは独立し、進級・転出入後も保持される。",
+      "columns": [
+        {
+          "name": "action_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('action_record_action_id_seq'::regclass)"
+        },
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "児童生徒ID: メインDBのpupil.pupil_idとの概念的FK"
+        },
+        {
+          "name": "schedule",
+          "type": "varchar(256)",
+          "nullable": true
+        },
+        {
+          "name": "schedule_date",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "name": "schedule_content",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "person_user_id",
+          "type": "integer",
+          "nullable": true
+        },
+        {
+          "name": "notification_date",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "name": "notification_status",
+          "type": "smallint",
+          "nullable": false,
+          "default": "0",
+          "comment": "通知ステータス: 0=未通知, 1=通知済み, 2=通知失敗"
+        },
+        {
+          "name": "execution_date",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "name": "execution_content",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "is_executed",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false",
+          "comment": "実行済みフラグ: 一覧画面のチェックボックスに対応"
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "grade",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "class_name",
+          "type": "varchar(32)",
+          "nullable": true
+        },
+        {
+          "name": "is_deleted",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "action_record_pkey",
+          "def": "CREATE UNIQUE INDEX action_record_pkey ON public.action_record USING btree (action_id)",
+          "table": "public.action_record",
+          "columns": [
+            "action_id"
+          ]
+        },
+        {
+          "name": "action_record_ix1",
+          "def": "CREATE INDEX action_record_ix1 ON public.action_record USING btree (pupil_id)",
+          "table": "public.action_record",
+          "columns": [
+            "pupil_id"
+          ]
+        },
+        {
+          "name": "action_record_ix2",
+          "def": "CREATE INDEX action_record_ix2 ON public.action_record USING btree (school_code)",
+          "table": "public.action_record",
+          "columns": [
+            "school_code"
+          ]
+        },
+        {
+          "name": "action_record_ix3",
+          "def": "CREATE INDEX action_record_ix3 ON public.action_record USING btree (person_user_id)",
+          "table": "public.action_record",
+          "columns": [
+            "person_user_id"
+          ]
+        },
+        {
+          "name": "action_record_ix4",
+          "def": "CREATE INDEX action_record_ix4 ON public.action_record USING btree (schedule_date)",
+          "table": "public.action_record",
+          "columns": [
+            "schedule_date"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "action_record_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (action_id)",
+          "table": "public.action_record",
+          "referenced_table": "",
+          "columns": [
+            "action_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.correspondence_record",
+      "type": "BASE TABLE",
+      "comment": "対応記録テーブル: 児童生徒に紐づく対応記録。学期・クラスとは独立し、進級・転出入後も保持される。",
+      "columns": [
+        {
+          "name": "correspondence_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('correspondence_record_correspondence_id_seq'::regclass)"
+        },
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "児童生徒ID: メインDBのpupil.pupil_idとの概念的FK"
+        },
+        {
+          "name": "correspondence_date",
+          "type": "date",
+          "nullable": false
+        },
+        {
+          "name": "subject",
+          "type": "varchar(256)",
+          "nullable": true
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "person_user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "school_code",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "記録時の学校コード（スナップショット）"
+        },
+        {
+          "name": "grade",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "記録時の学年（スナップショット）"
+        },
+        {
+          "name": "class_name",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "記録時のクラス（スナップショット）"
+        },
+        {
+          "name": "is_deleted",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        },
+        {
+          "name": "registered_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": true
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "correspondence_record_pkey",
+          "def": "CREATE UNIQUE INDEX correspondence_record_pkey ON public.correspondence_record USING btree (correspondence_id)",
+          "table": "public.correspondence_record",
+          "columns": [
+            "correspondence_id"
+          ]
+        },
+        {
+          "name": "correspondence_record_ix1",
+          "def": "CREATE INDEX correspondence_record_ix1 ON public.correspondence_record USING btree (pupil_id)",
+          "table": "public.correspondence_record",
+          "columns": [
+            "pupil_id"
+          ]
+        },
+        {
+          "name": "correspondence_record_ix2",
+          "def": "CREATE INDEX correspondence_record_ix2 ON public.correspondence_record USING btree (school_code)",
+          "table": "public.correspondence_record",
+          "columns": [
+            "school_code"
+          ]
+        },
+        {
+          "name": "correspondence_record_ix3",
+          "def": "CREATE INDEX correspondence_record_ix3 ON public.correspondence_record USING btree (person_user_id)",
+          "table": "public.correspondence_record",
+          "columns": [
+            "person_user_id"
+          ]
+        },
+        {
+          "name": "correspondence_record_ix4",
+          "def": "CREATE INDEX correspondence_record_ix4 ON public.correspondence_record USING btree (correspondence_date)",
+          "table": "public.correspondence_record",
+          "columns": [
+            "correspondence_date"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "correspondence_record_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (correspondence_id)",
+          "table": "public.correspondence_record",
+          "referenced_table": "",
+          "columns": [
+            "correspondence_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.meeting_private_memo",
+      "type": "BASE TABLE",
+      "comment": "個人メモ: ユーザーごと・会議種別ごとのプライベートメモ",
+      "columns": [
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "class_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "semester_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "varchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "meeting_type",
+          "type": "varchar(20)",
+          "nullable": false,
+          "comment": "SCREENING=スクリーニング会議, TEAM=校内チーム会議"
+        },
+        {
+          "name": "memo",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "meeting_private_memo_pkey",
+          "def": "CREATE UNIQUE INDEX meeting_private_memo_pkey ON public.meeting_private_memo USING btree (pupil_id, class_id, semester_id, user_id, meeting_type)",
+          "table": "public.meeting_private_memo",
+          "columns": [
+            "pupil_id",
+            "class_id",
+            "semester_id",
+            "user_id",
+            "meeting_type"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "meeting_private_memo_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (pupil_id, class_id, semester_id, user_id, meeting_type)",
+          "table": "public.meeting_private_memo",
+          "referenced_table": "",
+          "columns": [
+            "pupil_id",
+            "class_id",
+            "semester_id",
+            "user_id",
+            "meeting_type"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.pupil_info",
+      "type": "BASE TABLE",
+      "comment": "児童生徒情報",
+      "columns": [
+        {
+          "name": "personal_information_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "個人情報ID"
+        },
+        {
+          "name": "pupil_name",
+          "type": "varchar(64)",
+          "nullable": true,
+          "comment": "児童生徒名"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "pupil_info_pkey",
+          "def": "CREATE UNIQUE INDEX pupil_info_pkey ON public.pupil_info USING btree (personal_information_id)",
+          "table": "public.pupil_info",
+          "columns": [
+            "personal_information_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "pupil_info_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (personal_information_id)",
+          "table": "public.pupil_info",
+          "referenced_table": "",
+          "columns": [
+            "personal_information_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.screening_info",
+      "type": "BASE TABLE",
+      "comment": "スクリーニング情報",
+      "columns": [
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false,
+          "comment": "児童生徒ID"
+        },
+        {
+          "name": "classid",
+          "type": "integer",
+          "nullable": false,
+          "comment": "クラスID"
+        },
+        {
+          "name": "semesterid",
+          "type": "integer",
+          "nullable": false,
+          "comment": "期別ID"
+        },
+        {
+          "name": "semester",
+          "type": "varchar(32)",
+          "nullable": true,
+          "comment": "期別"
+        },
+        {
+          "name": "searchflag",
+          "type": "boolean",
+          "nullable": false,
+          "comment": "検索対象フラグ"
+        },
+        {
+          "name": "analysisflag",
+          "type": "boolean",
+          "nullable": false,
+          "comment": "解析実施フラグ"
+        },
+        {
+          "name": "data",
+          "type": "varchar(256)",
+          "nullable": true,
+          "comment": "スクリーニングデータ (85文字連結)"
+        },
+        {
+          "name": "g_2_1",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-小学1年"
+        },
+        {
+          "name": "g_2_2",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-小学2年"
+        },
+        {
+          "name": "g_2_3",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-小学3年"
+        },
+        {
+          "name": "g_2_4",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-小学4年"
+        },
+        {
+          "name": "g_2_5",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-小学5年"
+        },
+        {
+          "name": "g_2_6",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-小学6年"
+        },
+        {
+          "name": "g_2_7",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-中学1年"
+        },
+        {
+          "name": "g_2_8",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-中学2年"
+        },
+        {
+          "name": "g_2_9",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-中学3年"
+        },
+        {
+          "name": "g_43",
+          "type": "text",
+          "nullable": true,
+          "comment": "その他・備考"
+        },
+        {
+          "name": "input_numbers",
+          "type": "integer",
+          "nullable": true,
+          "comment": "項目の入力件数"
+        },
+        {
+          "name": "total",
+          "type": "integer",
+          "nullable": true,
+          "comment": "合計"
+        },
+        {
+          "name": "s_1",
+          "type": "text",
+          "nullable": true,
+          "comment": "子どもの背景"
+        },
+        {
+          "name": "s_2",
+          "type": "text",
+          "nullable": true,
+          "comment": "具体的なワンポイント内容"
+        },
+        {
+          "name": "s_3",
+          "type": "text",
+          "nullable": true,
+          "comment": "校内チーム会議に上げる"
+        },
+        {
+          "name": "s_4",
+          "type": "text",
+          "nullable": true,
+          "comment": "校内チーム会議AI判定"
+        },
+        {
+          "name": "s_5",
+          "type": "text",
+          "nullable": true,
+          "comment": "複数人で出した今後の方向性"
+        },
+        {
+          "name": "p_remark",
+          "type": "text",
+          "nullable": true,
+          "comment": "支援の現状-備考"
+        },
+        {
+          "name": "d_remark",
+          "type": "text",
+          "nullable": true,
+          "comment": "支援の方向性-備考"
+        },
+        {
+          "name": "ai_a",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "A：教職員の関与（AI判定）"
+        },
+        {
+          "name": "ai_b",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "B：地域資源の活用（AI判定）"
+        },
+        {
+          "name": "ai_c",
+          "type": "varchar(16)",
+          "nullable": true,
+          "comment": "C：専門機関の活動（AI判定）"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp(6) without time zone",
+          "nullable": false,
+          "comment": "更新日時"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "登録ユーザID"
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true,
+          "comment": "更新ユーザID"
+        },
+        {
+          "name": "g_2_10",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-学年10"
+        },
+        {
+          "name": "g_2_11",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-学年11"
+        },
+        {
+          "name": "g_2_12",
+          "type": "integer",
+          "nullable": true,
+          "comment": "欠席日数-学年12"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "screening_info_pkey",
+          "def": "CREATE UNIQUE INDEX screening_info_pkey ON public.screening_info USING btree (pupil_id, classid, semesterid)",
+          "table": "public.screening_info",
+          "columns": [
+            "pupil_id",
+            "classid",
+            "semesterid"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "screening_info_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (pupil_id, classid, semesterid)",
+          "table": "public.screening_info",
+          "referenced_table": "",
+          "columns": [
+            "pupil_id",
+            "classid",
+            "semesterid"
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "name": "trg_analysisflag_change",
+          "def": "CREATE TRIGGER trg_analysisflag_change AFTER INSERT OR UPDATE OF analysisflag ON public.screening_info FOR EACH ROW EXECUTE FUNCTION notify_analysisflag_change()"
+        }
+      ]
+    },
+    {
+      "name": "public.screening_user_memo",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "pupil_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "class_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "semester_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "memo_text",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "registered_user_id",
+          "type": "integer",
+          "nullable": true
+        },
+        {
+          "name": "updated_user_id",
+          "type": "integer",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "screening_user_memo_pkey",
+          "def": "CREATE UNIQUE INDEX screening_user_memo_pkey ON public.screening_user_memo USING btree (pupil_id, class_id, semester_id, user_id)",
+          "table": "public.screening_user_memo",
+          "columns": [
+            "pupil_id",
+            "class_id",
+            "semester_id",
+            "user_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "screening_user_memo_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (pupil_id, class_id, semester_id, user_id)",
+          "table": "public.screening_user_memo",
+          "referenced_table": "",
+          "columns": [
+            "pupil_id",
+            "class_id",
+            "semester_id",
+            "user_id"
+          ]
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "public.notify_analysisflag_change",
+      "return_type": "trigger",
+      "arguments": "",
+      "type": "FUNCTION"
+    }
+  ],
+  "driver": {
+    "name": "postgres",
+    "database_version": "PostgreSQL 17.7 on x86_64-windows, compiled by msvc-19.44.35221, 64-bit",
+    "meta": {
+      "current_schema": "public",
+      "search_paths": [
+        "postgres",
+        "public"
+      ],
+      "dict": {
+        "Functions": "Stored procedures and functions"
+      }
+    }
+  }
+}
