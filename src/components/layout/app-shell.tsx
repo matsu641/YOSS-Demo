@@ -124,7 +124,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
           <Link
             href="/support-effects"
-            title={collapsed ? "支援効果" : undefined}
+            title={collapsed ? "支援状況・変化" : undefined}
             className={cn(
               "nav-item",
               path === "/support-effects" && "active",
@@ -132,7 +132,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             onClick={() => open && toggle()}
           >
             <HeartPulse />
-            <span>支援効果</span>
+            <span>支援状況・変化</span>
           </Link>
           <div className="nav-divider" />
           {displayOnlyNav.map(([label, Icon]) => (
